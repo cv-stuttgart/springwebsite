@@ -1,0 +1,110 @@
+{% extends "springeval/base.html" %}
+
+{% block title %}
+<title>Scene Flow Evaluation &ndash; The Spring Dataset &amp; Benchmark</title>
+{% endblock %}
+
+{% block content %}
+
+
+{% if entries_list %}
+<div style="overflow-x:auto;">
+<table>
+    <tr>
+        <th style="width:0;"></th>
+        <th style="width:100%;">Name</th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:sceneflow' %}">1px {% if sortby == "err_1px_SF_total" %}&#9650;{% endif %}<br>total</a>
+        </th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_lowdetail">1px {% if sortby == "err_1px_SF_lowdetail" %}&#9650;{% endif %}<br>low-det.</a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_highdetail">1px {% if sortby == "err_1px_SF_highdetail" %}&#9650;{% endif %}<br>high-det.</a>
+        </th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_matched">1px {% if sortby == "err_1px_SF_matched" %}&#9650;{% endif %}<br>matched</a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_unmatched">1px {% if sortby == "err_1px_SF_unmatched" %}&#9650;{% endif %}<br>unmat.</a>
+        </th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_rigid">1px {% if sortby == "err_1px_SF_rigid" %}&#9650;{% endif %}<br>rigid</a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_nonrigid">1px {% if sortby == "err_1px_SF_nonrigid" %}&#9650;{% endif %}<br>non-rig.</a>
+        </th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_notsky">1px {% if sortby == "err_1px_SF_notsky" %}&#9650;{% endif %}<br>not sky</a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_sky">1px {% if sortby == "err_1px_SF_sky" %}&#9650;{% endif %}<br>sky</a>
+        </th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_s0_10">1px {% if sortby == "err_1px_SF_s0_10" %}&#9650;{% endif %}<br>s0-10</a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_s10_40">1px {% if sortby == "err_1px_SF_s10_40" %}&#9650;{% endif %}<br>s10-40</a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:sceneflow' %}?s=err_1px_SF_s40">1px {% if sortby == "err_1px_SF_s40" %}&#9650;{% endif %}<br>s40+</a>
+        </th>
+        <th class="leftbig clickable">
+            <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:sceneflow' %}?s=err_SF_total">SF {% if sortby == "err_SF_total" %}&#9650;{% endif %}</a>
+        </th>
+        <th class="clickable">
+            <a style="padding-top:1rem;padding-bottom:1rem" href="{% url 'springeval:sceneflow' %}?s=err_1px_D1_total">1px<sup> D1</sup> {% if sortby == "err_1px_D1_total" %}&#9650;{% endif %}</a>
+        </th>
+        <th class="clickable">
+            <a style="padding-top:1rem;padding-bottom:1rem" href="{% url 'springeval:sceneflow' %}?s=err_1px_D2_total">1px<sup> D2</sup> {% if sortby == "err_1px_D2_total" %}&#9650;{% endif %}</a>
+        </th>
+        <th class="clickable">
+            <a style="padding-top:1rem;padding-bottom:1rem" href="{% url 'springeval:sceneflow' %}?s=err_1px_Fl_total">1px<sup> Fl</sup> {% if sortby == "err_1px_Fl_total" %}&#9650;{% endif %}</a>
+        </th>
+    </tr>
+    <tr>
+    <td colspan="12" class="citation">
+        &nbsp;
+    </td>
+    </tr>
+    {% for entry in entries_list %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td><a href="{% url 'springeval:detail' entry.id %}">{{ entry.name }}</a></td>
+        <td class="num3 leftbig">{{ entry.err_1px_SF_total|floatformat:3 }}</td>
+        <td class="num3 leftbig">{{ entry.err_1px_SF_lowdetail|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_SF_highdetail|floatformat:3 }}</td>
+        <td class="num3 leftbig">{{ entry.err_1px_SF_matched|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_SF_unmatched|floatformat:3 }}</td>
+        <td class="num3 leftbig">{{ entry.err_1px_SF_rigid|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_SF_nonrigid|floatformat:3 }}</td>
+        <td class="num3 leftbig">{{ entry.err_1px_SF_notsky|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_SF_sky|floatformat:3 }}</td>
+        <td class="num3 leftbig">{{ entry.err_1px_SF_s0_10|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_SF_s10_40|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_SF_s40|floatformat:3 }}</td>
+        <td class="num3 leftbig">{{ entry.err_SF_total|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_D1_total|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_D2_total|floatformat:3 }}</td>
+        <td class="num3">{{ entry.err_1px_Fl_total|floatformat:3 }}</td>
+    </tr>
+    <tr>
+        <td class="citation"></td>
+        <td colspan="17" class="citation">
+            {% if entry.visibility == "ANON" %}
+                Anonymous.
+            {% else %}
+                {% if entry.citation|length > 0 %}
+                    {{ entry.citation }}
+                {% else %}
+                    &nbsp;
+                {% endif %}
+            {% endif %}
+        </td>
+    {% endfor %}
+</table>
+</div>
+{% else %}
+<p>No data available.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% autoescape off %}
+Hello,
+a new account was created on the Spring benchmark webpage.
+Please click on the link to confirm your registration:
+http://{{ domain }}{% url 'springeval:activate' uidb64=uid token=token %}
+
+Best regards,
+The Spring benchmark team
+{% endautoescape %}

@@ -1,0 +1,13 @@
+{% extends "springeval/base.html" %}
+
+{% block content %}
+
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

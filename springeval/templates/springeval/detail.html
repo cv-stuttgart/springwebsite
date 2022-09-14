@@ -1,0 +1,681 @@
+{% extends "springeval/base.html" %}
+
+{% block content %}
+
+
+<h3>{{ resultentry.name }}</h3>
+{% if resultentry.process_status == "WAIT_UPL" or resultentry.process_status == "WAIT_PROC" %}
+<p>&nbsp;&#8634; <i>{{resultentry.get_process_status_display}}</i></p>
+{% endif %}
+{% if resultentry.process_status == "FAIL"%}
+<p>&nbsp;&#x2716; <i>{{resultentry.get_process_status_display}}</i></p>
+{% endif %}
+<p>{{resultentry.pub_date}} &nbsp;&mdash;&nbsp; {{resultentry.get_visibility_display}}</p>
+<p>
+{% if resultentry.visibility == "ANON" %}
+Anonymous.
+{% else %}
+    {% if resultentry.citation|length > 0 %}
+        {{ resultentry.citation }}
+    {% else %}
+        &nbsp;
+    {% endif %}
+{% endif %}
+</p>
+
+{% if user.is_authenticated and user.pk == resultentry.creator.pk and resultentry.process_status == "SUCCESS"%}
+<nav style="padding-top:0px"><a href="{% url 'springeval:edit' resultentry.id %}" style="font-size:0.8rem">Edit</a></nav>
+{% endif %}
+
+{% if resultentry.method_type == "ST" %}
+<h4>Stereo</h4>
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>1px<br>low-detail</th>
+        <th>1px<br>high-detail</th>
+        <th>1px<br>matched</th>
+        <th>1px<br>unmatched</th>
+        <th>1px<br>not sky</th>
+        <th>1px<br>sky</th>
+        <th>1px<br>s0-10</th>
+        <th>1px<br>s10-40</th>
+        <th>1px<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_1px_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="7" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>Abs<br>total</th>
+        <th>Abs<br>low-detail</th>
+        <th>Abs<br>high-detail</th>
+        <th>Abs<br>matched</th>
+        <th>Abs<br>unmatched</th>
+        <th>Abs<br>not sky</th>
+        <th>Abs<br>sky</th>
+        <th>Abs<br>s0-10</th>
+        <th>Abs<br>s10-40</th>
+        <th>Abs<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_Abs_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="7" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>D1<br>total</th>
+        <th>D1<br>low-detail</th>
+        <th>D1<br>high-detail</th>
+        <th>D1<br>matched</th>
+        <th>D1<br>unmatched</th>
+        <th>D1<br>not sky</th>
+        <th>D1<br>sky</th>
+        <th>D1<br>s0-10</th>
+        <th>D1<br>s10-40</th>
+        <th>D1<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_s40|floatformat:3 }}</td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
+
+{% elif resultentry.method_type == "FL" %}
+<h4>Optical Flow</h4>
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>1px<br>low-detail</th>
+        <th>1px<br>high-detail</th>
+        <th>1px<br>matched</th>
+        <th>1px<br>unmatched</th>
+        <th>1px<br>rigid</th>
+        <th>1px<br>non-rigid</th>
+        <th>1px<br>not sky</th>
+        <th>1px<br>sky</th>
+        <th>1px<br>s0-10</th>
+        <th>1px<br>s10-40</th>
+        <th>1px<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_1px_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>EPE<br>total</th>
+        <th>EPE<br>low-detail</th>
+        <th>EPE<br>high-detail</th>
+        <th>EPE<br>matched</th>
+        <th>EPE<br>unmatched</th>
+        <th>EPE<br>rigid</th>
+        <th>EPE<br>non-rigid</th>
+        <th>EPE<br>not sky</th>
+        <th>EPE<br>sky</th>
+        <th>EPE<br>s0-10</th>
+        <th>EPE<br>s10-40</th>
+        <th>EPE<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_EPE_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>Fl<br>total</th>
+        <th>Fl<br>low-detail</th>
+        <th>Fl<br>high-detail</th>
+        <th>Fl<br>matched</th>
+        <th>Fl<br>unmatched</th>
+        <th>Fl<br>rigid</th>
+        <th>Fl<br>non-rigid</th>
+        <th>Fl<br>not sky</th>
+        <th>Fl<br>sky</th>
+        <th>Fl<br>s0-10</th>
+        <th>Fl<br>s10-40</th>
+        <th>Fl<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>WAUC<br>total</th>
+        <th>WAUC<br>low-detail</th>
+        <th>WAUC<br>high-detail</th>
+        <th>WAUC<br>matched</th>
+        <th>WAUC<br>unmatched</th>
+        <th>WAUC<br>rigid</th>
+        <th>WAUC<br>non-rigid</th>
+        <th>WAUC<br>not sky</th>
+        <th>WAUC<br>sky</th>
+        <th>WAUC<br>s0-10</th>
+        <th>WAUC<br>s10-40</th>
+        <th>WAUC<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_WAUC_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_s40|floatformat:3 }}</td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% elif resultentry.method_type == "SF" %}
+<h4>Scene Flow</h4>
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>1px<br>low-detail</th>
+        <th>1px<br>high-detail</th>
+        <th>1px<br>matched</th>
+        <th>1px<br>unmatched</th>
+        <th>1px<br>rigid</th>
+        <th>1px<br>non-rigid</th>
+        <th>1px<br>not sky</th>
+        <th>1px<br>sky</th>
+        <th>1px<br>s0-10</th>
+        <th>1px<br>s10-40</th>
+        <th>1px<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_1px_SF_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_SF_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>SF<br>total</th>
+        <th>SF<br>low-detail</th>
+        <th>SF<br>high-detail</th>
+        <th>SF<br>matched</th>
+        <th>SF<br>unmatched</th>
+        <th>1px<br>rigid</th>
+        <th>1px<br>non-rigid</th>
+        <th>SF<br>not sky</th>
+        <th>SF<br>sky</th>
+        <th>SF<br>s0-10</th>
+        <th>SF<br>s10-40</th>
+        <th>SF<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_SF_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_SF_s40|floatformat:3 }}</td>
+    </tr>
+</table>
+
+<h4>Disparity 1</h4>
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>1px<br>low-detail</th>
+        <th>1px<br>high-detail</th>
+        <th>1px<br>matched</th>
+        <th>1px<br>unmatched</th>
+        <th>1px<br>not sky</th>
+        <th>1px<br>sky</th>
+        <th>1px<br>s0-10</th>
+        <th>1px<br>s10-40</th>
+        <th>1px<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_1px_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D1_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="7" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>Abs<br>total</th>
+        <th>Abs<br>low-detail</th>
+        <th>Abs<br>high-detail</th>
+        <th>Abs<br>matched</th>
+        <th>Abs<br>unmatched</th>
+        <th>Abs<br>not sky</th>
+        <th>Abs<br>sky</th>
+        <th>Abs<br>s0-10</th>
+        <th>Abs<br>s10-40</th>
+        <th>Abs<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_Abs_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D1_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="7" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>D1<br>total</th>
+        <th>D1<br>low-detail</th>
+        <th>D1<br>high-detail</th>
+        <th>D1<br>matched</th>
+        <th>D1<br>unmatched</th>
+        <th>D1<br>not sky</th>
+        <th>D1<br>sky</th>
+        <th>D1<br>s0-10</th>
+        <th>D1<br>s10-40</th>
+        <th>D1<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D1_s40|floatformat:3 }}</td>
+    </tr>
+</table>
+
+<h4>Disparity 2</h4>
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>1px<br>low-detail</th>
+        <th>1px<br>high-detail</th>
+        <th>1px<br>matched</th>
+        <th>1px<br>unmatched</th>
+        <th>1px<br>not sky</th>
+        <th>1px<br>sky</th>
+        <th>1px<br>s0-10</th>
+        <th>1px<br>s10-40</th>
+        <th>1px<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_1px_D2_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_D2_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="7" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>Abs<br>total</th>
+        <th>Abs<br>low-detail</th>
+        <th>Abs<br>high-detail</th>
+        <th>Abs<br>matched</th>
+        <th>Abs<br>unmatched</th>
+        <th>Abs<br>not sky</th>
+        <th>Abs<br>sky</th>
+        <th>Abs<br>s0-10</th>
+        <th>Abs<br>s10-40</th>
+        <th>Abs<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_Abs_D2_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Abs_D2_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="7" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>D2<br>total</th>
+        <th>D2<br>low-detail</th>
+        <th>D2<br>high-detail</th>
+        <th>D2<br>matched</th>
+        <th>D2<br>unmatched</th>
+        <th>D2<br>not sky</th>
+        <th>D2<br>sky</th>
+        <th>D2<br>s0-10</th>
+        <th>D2<br>s10-40</th>
+        <th>D2<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_D2_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_D2_s40|floatformat:3 }}</td>
+    </tr>
+</table>
+
+<h4>Optical Flow</h4>
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>1px<br>low-detail</th>
+        <th>1px<br>high-detail</th>
+        <th>1px<br>matched</th>
+        <th>1px<br>unmatched</th>
+        <th>1px<br>rigid</th>
+        <th>1px<br>non-rigid</th>
+        <th>1px<br>not sky</th>
+        <th>1px<br>sky</th>
+        <th>1px<br>s0-10</th>
+        <th>1px<br>s10-40</th>
+        <th>1px<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_1px_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_1px_Fl_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>EPE<br>total</th>
+        <th>EPE<br>low-detail</th>
+        <th>EPE<br>high-detail</th>
+        <th>EPE<br>matched</th>
+        <th>EPE<br>unmatched</th>
+        <th>EPE<br>rigid</th>
+        <th>EPE<br>non-rigid</th>
+        <th>EPE<br>not sky</th>
+        <th>EPE<br>sky</th>
+        <th>EPE<br>s0-10</th>
+        <th>EPE<br>s10-40</th>
+        <th>EPE<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_EPE_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_EPE_Fl_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>Fl<br>total</th>
+        <th>Fl<br>low-detail</th>
+        <th>Fl<br>high-detail</th>
+        <th>Fl<br>matched</th>
+        <th>Fl<br>unmatched</th>
+        <th>Fl<br>rigid</th>
+        <th>Fl<br>non-rigid</th>
+        <th>Fl<br>not sky</th>
+        <th>Fl<br>sky</th>
+        <th>Fl<br>s0-10</th>
+        <th>Fl<br>s10-40</th>
+        <th>Fl<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_Fl_s40|floatformat:3 }}</td>
+    </tr>
+    <td colspan="9" class="citation">
+        &nbsp;
+    </td>
+    <tr>
+        <th>WAUC<br>total</th>
+        <th>WAUC<br>low-detail</th>
+        <th>WAUC<br>high-detail</th>
+        <th>WAUC<br>matched</th>
+        <th>WAUC<br>unmatched</th>
+        <th>WAUC<br>rigid</th>
+        <th>WAUC<br>non-rigid</th>
+        <th>WAUC<br>not sky</th>
+        <th>WAUC<br>sky</th>
+        <th>WAUC<br>s0-10</th>
+        <th>WAUC<br>s10-40</th>
+        <th>WAUC<br>s40+</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.err_WAUC_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_lowdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_highdetail|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_matched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_unmatched|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_rigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_nonrigid|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_notsky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_sky|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_s0_10|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_s10_40|floatformat:3 }}</td>
+        <td>{{ resultentry.err_WAUC_Fl_s40|floatformat:3 }}</td>
+    </tr>
+</table>
+
+
+{% endif %}
+
+{% load static %}
+
+
+<table style="table-layout: fixed;">
+{% for i in range %}
+<tr>
+
+<td><figure>
+<img src="{% static 'springeval/heroframes' %}/hero_{{i}}.png" alt="reference frame" class="resultimg">
+<figcaption>Reference Frame</figcaption>
+</figure></td>
+
+{% if resultentry.method_type == "ST" or resultentry.method_type == "SF" %}
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/d1img_{{i}}.png" alt="color visualization of disparity 1" class="resultimg">
+<figcaption>Disparity 1 visualization</figcaption>
+</figure></td>
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/d1errimg_{{i}}.png" alt="grayscale visualization of disparity 1 error" class="resultimg">
+<figcaption>Disparity 1 error</figcaption>
+</figure></td>
+{% endif %}
+
+{% if resultentry.method_type == "SF" %}
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/d2img_{{i}}.png" alt="color visualization of disparity 2" class="resultimg">
+<figcaption>Disparity 2 visualization</figcaption>
+</figure></td>
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/d2errimg_{{i}}.png" alt="grayscale visualization of disparity 2 error" class="resultimg">
+<figcaption>Disparity 2 error</figcaption>
+</figure></td>
+{% endif %}
+
+{% if resultentry.method_type == "FL" or resultentry.method_type == "SF" %}
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/flimg_{{i}}.png" alt="color visualization of optical flow" class="resultimg">
+<figcaption>Flow visualization</figcaption>
+</figure></td>
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/flerrimg_{{i}}.png" alt="grayscale visualization of optical flow error" class="resultimg">
+<figcaption>Flow error</figcaption>
+</figure></td>
+{% endif %}
+
+{% if resultentry.method_type == "SF" %}
+<td><figure>
+<img src="{% get_media_prefix %}{{ resultentry.imghash.hex }}/sferrimg_{{i}}.png" alt="grayscale visualization of optical flow error" class="resultimg">
+<figcaption>Scene flow error</figcaption>
+</figure></td>
+{% endif %}
+
+</tr>
+{% endfor %}
+</table>
+
+
+<figure>
+<figcaption style="margin-bottom:0;">Error visualization color code</figcaption>
+<picture>
+<source srcset="{% static 'springeval/colorbar_dark.png' %}" media="(prefers-color-scheme: dark)">
+<img width="100%" src="{% static 'springeval/colorbar_light.png' %}" alt="blue to white to red error visualization color code">
+</picture>
+</figure>
+
+
+{% endblock %}

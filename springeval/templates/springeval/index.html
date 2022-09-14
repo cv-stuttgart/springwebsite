@@ -1,0 +1,70 @@
+{% extends "springeval/base.html" %}
+
+{% block content %}
+
+<p>Welcome to the Spring dataset and evaluation benchmark for stereo, optical flow and scene flow estimation!</p>
+
+<div style="margin: auto;width: 100%">
+<div class="startbutton">
+    <a href="https://doi.org/10.18419/darus-3376" target="_blank" rel="noopener noreferrer"><h1>&#11015;</h1><p>Download dataset</p></a>
+</div>
+<div class="startbutton">
+    <a href="https://openaccess.thecvf.com/content/CVPR2023/papers/Mehl_Spring_A_High-Resolution_High-Detail_Dataset_and_Benchmark_for_Scene_Flow_CVPR_2023_paper.pdf" target="_blank" rel="noopener noreferrer"><h1>&#x1F4C4;</h1><p>Paper<br>&nbsp;</p></a>
+</div>
+<div class="startbutton">
+    <a href="https://openaccess.thecvf.com/content/CVPR2023/supplemental/Mehl_Spring_A_High-Resolution_CVPR_2023_supplemental.pdf" target="_blank" rel="noopener noreferrer"><h1>&#x1F4C4;</h1><p>Suppl.<br>Material</p></a>
+</div>
+<div class="startbutton">
+    <a href="https://arxiv.org/abs/2303.01943" target="_blank" rel="noopener noreferrer"><h1>&#x1F4C4;</h1><p>Paper<br>(ArXiv)</p></a>
+</div>
+<div class="startbutton">
+    <a href="https://cloud.visus.uni-stuttgart.de/index.php/s/5MtTY23RWcWfgPE" target="_blank" rel="noopener noreferrer"><h1>&#11015;</h1><p>Download sample</p></a>
+</div>
+<div class="startbutton">
+    <a href="https://www.youtube.com/watch?v=omcntkTrFTg" target="_blank" rel="noopener noreferrer"><h1>&#9654;</h1><p>View</br>Video</p></a>
+</div>
+<div class="startbutton">
+    <a href="https://github.com/cv-stuttgart/sceneflow_from_blender" target="_blank" rel="noopener noreferrer"><h1>&lt;/&gt;</h1><p>Code<br>(Blender)</p></a>
+</div>
+{% comment %}
+<div class="startbutton">
+    <a href="#"><h1>&lt;/&gt;</h1><p>Code<br>(Website)</p></a>
+</div>
+{% endcomment %}
+</div>
+
+
+{% load static %}
+
+<div class="teaserimg" style="margin-top:1em;">
+<figure>
+<img width="100%" src="{% static 'springeval/teaserimage.png' %}" alt="Teaser image">
+<figcaption>The Spring dataset consists of high-resolution left and right <b>stereo images</b> (1920x1080px). It also contains full scene flow data with 4x super-resolution (3840x2160px). For stereo/depth estimation, left-to-right and right-to-left <b>disparity</b> is given for every frame (see second row). For scene flow estimation, the dataset provides <b>disparity change</b> for left and right as well as forward and backward direction (see third row). For optical flow estimation, the Spring dataset contains left and right, forward and backward <b>optical flow</b> (see last row).</figcaption>
+</figure>
+</div>
+
+<h3>News</h3>
+<ul>
+<li>March 20, 2023: Starting today we accept submissions of registered users. You can submit once per hour and up to three times per 30 days.</li>
+<li>March 14, 2023: Our full dataset is now available for <a href="https://doi.org/10.18419/darus-3376" target="_blank" rel="noopener noreferrer">download</a>!</li>
+<li>March 03, 2023: Hello world &ndash; our website is launched! We make a small sample available for download.</li>
+</ul>
+
+<h3>Paper</h3>
+<p>If you make use of our dataset or benchmark results, please cite our <a href="https://arxiv.org/abs/2303.01943" target="_blank" rel="noopener noreferrer">paper</a>:</p>
+<pre><code>@InProceedings{Mehl2023_Spring,
+    author    = {Lukas Mehl and Jenny Schmalfuss and Azin Jahedi and Yaroslava Nalivayko and Andr\'es Bruhn},
+    title     = {Spring: A High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo},
+    booktitle = {Proc. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year      = {2023}
+}
+</code></pre>
+
+<h3>Further benchmarks</h3>
+<p>There are many benchmarks that have been pushing forward research in the domains of motion estimation and stereo.
+Most notable examples are the <a href="https://vision.middlebury.edu/flow/" target="_blank" rel="noopener noreferrer">Middlebury optical flow</a> and <a href="https://vision.middlebury.edu/stereo/" target="_blank" rel="noopener noreferrer">stereo benchmark</a>, the <a href="https://www.cvlibs.net/datasets/kitti/eval_stereo_flow.php?benchmark=flow" target="_blank" rel="noopener noreferrer">KITTI 2012 optical flow</a> and <a href="https://www.cvlibs.net/datasets/kitti/eval_stereo_flow.php?benchmark=stereo" target="_blank" rel="noopener noreferrer">stereo benchmark</a>, the <a href="http://sintel.is.tue.mpg.de/" target="_blank" rel="noopener noreferrer">Sintel optical flow benchmark</a>, <a href="https://www.cvlibs.net/datasets/kitti/eval_scene_flow.php" target="_blank" rel="noopener noreferrer">KITTI 2015</a> as the first benchmark for <a href="https://www.cvlibs.net/datasets/kitti/eval_scene_flow.php" target="_blank" rel="noopener noreferrer">scene flow</a>, <a href="https://www.cvlibs.net/datasets/kitti/eval_scene_flow.php?benchmark=flow" target="_blank" rel="noopener noreferrer">optical flow</a> and <a href="https://www.cvlibs.net/datasets/kitti/eval_scene_flow.php?benchmark=stereo" target="_blank" rel="noopener noreferrer">stereo</a>, the <a href="https://www.eth3d.net/" target="_blank" rel="noopener noreferrer">ETH3D stereo benchmark</a> and the <a href="https://playing-for-benchmarks.org/" target="_blank" rel="noopener noreferrer">VIPER optical flow benchmark</a>.
+As a great addition to existing benchmarks, the <a href="http://www.robustvision.net/" target="_blank" rel="noopener noreferrer">Robust Vision Challenge</a> ranks algorithms according to their cross-benchmark generalization.
+Unfortunately, the <a href="http://hci-benchmark.iwr.uni-heidelberg.de/" target="_blank" rel="noopener noreferrer">HD1K benchmark</a> seems to be offline at the time of writing.
+</p>
+
+{% endblock %}
