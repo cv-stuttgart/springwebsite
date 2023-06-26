@@ -69,7 +69,10 @@
 <table class="logotable">
 <tr>
 <td style="width:25%;text-align:center" class="noborder"><img width="100%" src="{% static 'springeval/autumn.png' %}" alt="Dog from the spring movie called autumn"></td>
-<td style="width:33%;text-align:center" class="noborder"><a href="https://www.vis.uni-stuttgart.de/" target="_blank" rel="noopener noreferrer"><img width="95%" src="{% static 'springeval/vislogo_white.png' %}" alt="Logo of University of Stuttgart / VIS Institute"></a></td>
+<td style="width:33%;text-align:center" class="noborder"><a href="https://www.vis.uni-stuttgart.de/" target="_blank" rel="noopener noreferrer"><picture>
+<source srcset="{% static 'springeval/vislogo_white.png' %}" media="(prefers-color-scheme: dark)">
+<img width="95%" src="{% static 'springeval/vislogo.png' %}" alt="Logo of University of Stuttgart / VIS Institute">
+</picture></a></td>
 <td style="width:21%;text-align:center" class="noborder"><a href="https://www.sfbtrr161.de/" target="_blank" rel="noopener noreferrer"><img width="95%" src="{% static 'springeval/logo_sfbtrr161.png' %}" alt="Logo of SFB TRR 161"></a></td>
 <td style="width:17%;text-align:center" class="noborder"><a href="https://imprs.is.mpg.de/" target="_blank" rel="noopener noreferrer"><img width="95%" src="{% static 'springeval/imprs_is_logo.png' %}" alt="Logo of IMPRS-IS"></a></td>
 </tr>
