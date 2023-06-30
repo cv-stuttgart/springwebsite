@@ -125,6 +125,8 @@ class ResultEntry(models.Model):
     )
     process_status = models.CharField(max_length=10, choices=STATUS_CHOICES, blank=False, null=False)
 
+    code_url = models.URLField(verbose_name="Link to code", blank=True, null=True)
+
     # errors
     err_SF_total = models.FloatField("error SF total", default=-1)
     err_SF_lowdetail = models.FloatField("error SF lowdetail", default=-1)

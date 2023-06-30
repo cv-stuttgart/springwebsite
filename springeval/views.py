@@ -127,7 +127,7 @@ def submit(request):
 
 class EditView(UserPassesTestMixin, generic.UpdateView):
     model = ResultEntry
-    fields = ["name", "visibility", "citation"]
+    fields = ["name", "visibility", "citation", "code_url"]
 
     def test_func(self):
         if not self.request.user.is_authenticated:
