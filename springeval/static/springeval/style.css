@@ -345,6 +345,11 @@ div.startbutton a:hover {
     color: var(--accent);
 }
 
+div.namebox{
+    display: flex;
+    justify-content: space-between;
+}
+
 
 a.codebutton,
 a.codebutton:visited {
@@ -352,7 +357,6 @@ a.codebutton:visited {
     border: 1px solid var(--border);
     border-radius: 5px;
     color: var(--text);
-    float: right;
     padding-left: 0.2em;
     padding-right: 0.2em;
     padding-top: 0.1rem;

@@ -58,13 +58,18 @@
     <tr>
         <td>{{ forloop.counter }}</td>
         <td>
-            <a href="{% url 'springeval:detail' entry.id %}">{{ entry.name }}</a>
-            {% if entry.method_type == "SF" %}
-                [SF]
-            {% endif %}
-            {% if entry.code_url|length > 0 %}
-                <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
-            {% endif %}
+            <div class="namebox">
+                <span>
+                    <a href="{% url 'springeval:detail' entry.id %}">{{ entry.name }}</a>
+                    {% if entry.method_type == "SF" %}
+                        [SF]
+                    {% endif %}
+                    &nbsp;
+                </span>
+                {% if entry.code_url|length > 0 %}
+                    <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
+                {% endif %}
+            </div>
         </td>
         <td class="num leftbig">{{ entry.err_1px_D1_total|floatformat:3 }}</td>
         <td class="num leftbig">{{ entry.err_1px_D1_lowdetail|floatformat:3 }}</td>
