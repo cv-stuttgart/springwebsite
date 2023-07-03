@@ -23,6 +23,15 @@ Anonymous.
 {% endif %}
 </p>
 
+<p>
+{% if resultentry.visibility != "ANON" and resultentry.code_url|length > 0 %}
+    Code: <a href="{{ resultentry.code_url }}" target="_blank" rel="noopener noreferrer">{{ resultentry.code_url }}</a>
+{% endif %}
+{% else %}
+    &nbsp;
+{% endif %}
+</p>
+
 {% if user.is_authenticated and user.pk == resultentry.creator.pk and resultentry.process_status == "SUCCESS"%}
 <nav style="padding-top:0px"><a href="{% url 'springeval:edit' resultentry.id %}" style="font-size:0.8rem">Edit</a></nav>
 {% endif %}

@@ -76,7 +76,7 @@
                     <a href="{% url 'springeval:detail' entry.id %}">{{ entry.name }}</a>
                     &nbsp;
                 </span>
-                {% if entry.code_url|length > 0 %}
+                {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
                     <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
                 {% endif %}
             </div>
