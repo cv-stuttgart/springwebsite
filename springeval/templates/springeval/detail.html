@@ -26,7 +26,6 @@ Anonymous.
 <p>
 {% if resultentry.visibility != "ANON" and resultentry.code_url|length > 0 %}
     Code: <a href="{{ resultentry.code_url }}" target="_blank" rel="noopener noreferrer">{{ resultentry.code_url }}</a>
-{% endif %}
 {% else %}
     &nbsp;
 {% endif %}
