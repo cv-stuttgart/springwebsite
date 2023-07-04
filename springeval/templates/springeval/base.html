@@ -51,6 +51,11 @@
         {% else %}
             <a href="{% url 'springeval:user' %}">Submit</a>
         {% endif %}
+        {% if request.path == "/faq" %}
+            <a href="{% url 'springeval:faq' %}" class="current">FAQ</a>
+        {% else %}
+            <a href="{% url 'springeval:faq' %}">FAQ</a>
+        {% endif %}
     </nav>
     <div style="float:right; text-align: center;">
         {% if user.is_authenticated %}

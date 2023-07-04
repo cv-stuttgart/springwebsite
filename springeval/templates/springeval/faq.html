@@ -1,0 +1,71 @@
+{% extends "springeval/base.html" %}
+
+{% block content %}
+
+<h3>Frequently Asked Questions</h3>
+
+
+<h4>How does the registration work?</h4>
+<p>In order to submit to the benchmark, i.e. evaluate results on the Spring <i>test</i> split, you need to register.
+Please note that in order to <a href="https://doi.org/10.18419/darus-3376" target="_blank" rel="noopener noreferrer">download</a> the dataset, no registration is needed.
+To register, first <a href="{% url 'springeval:signup' %}">create an account</a> and confirm your mail address by clicking on the link we will send to you.
+Afterwards, your account request will be verified by our team. Finally, after successful verification, you can submit results for evaluation.
+</p>
+
+
+<h4>How does the submission work?</h4>
+<ol>
+<li>Let your new and interesting approach predict results for the spring test split.</li>
+<ul>
+    <li>You can find code to read/write <code>.flo5</code> and <code>.dsp5</code> files <a href="https://github.com/cv-stuttgart/flow_library/blob/master/flow_IO.py" target="_blank" rel="noopener noreferrer">here</a>.</li>
+    <li>Use the same folder structure, file naming and file formats as in the dataset.</li>
+    <li>For stereo use <code>&lt;rootdir&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code></li>
+    <li>For optical flow use <code>&lt;rootdir&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code></li>
+    <li>For scene flow use the above plus <code>&lt;rootdir&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code></li>
+</ul>
+<li>Use the subsampling executable for submission file(s) generation.</li>
+<ul>
+    <li>Download the <a href="https://cloud.visus.uni-stuttgart.de/index.php/s/Yn6ndkgQ9rvlYCp" target="_blank" rel="noopener noreferrer">subsampling executable(s)</a>.</li>
+    <li>Usage: <code>./{flow|disp1|disp2}_subsampling &lt;rootdir&gt;</code>. A hdf5 submission file is generated in the current directory.</li>
+    <li>Use the disp1 or flow executables for the stereo or optical flow task; use all three for the scene flow task.</li>
+</ul>
+<li>Upload to our benchmark webpage for evaluation.</li>
+<ul>
+    <li>Upload your hdf5 file (for scene flow: your three hdf5 files) under <a href="{% url 'springeval:user' %}">submit</a>.</li>
+    <li>Please allow up to 1-2h until your result is evaluated.</li>
+    <li>All results are by default set to private. You can later choose results to be private, public anonymous or public.</li>
+</ul>
+</ol>
+
+
+<h4>Which data formats do you provide?</h4>
+<p>Images and maps are given in <code>png</code> format. Disparity and optical flow files are given in <a href="https://www.hdfgroup.org/" target="_blank" rel="noopener noreferrer">HDF5</a> file format and named <code>.dsp5</code> for disparity and <code>.flo5</code> for optical flow.
+You can find reference code to read/write <code>.flo5</code> and <code>.dsp5</code> files <a href="https://github.com/cv-stuttgart/flow_library/blob/master/flow_IO.py" target="_blank" rel="noopener noreferrer">here</a>.
+</p>
+
+
+<h4>Do you also provide point clouds for the Spring dataset?</h4>
+<p>You can find code to transform Spring data to point 3D point clouds <a href="https://github.com/cv-stuttgart/spring_utils" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+
+<h4>How can I compute metric depth from disparity?</h4>
+<p>In general, depth <code>Z</code> is computed from disparity <code>d</code> through <code>Z = fx * B / d</code>, where <code>fx</code> is the focal length in pixels (given in intrinsics.txt) and <code>B</code> is the stereo camera baseline distance; for Spring this is always 0.065m. Please note that the Spring dataset encodes infinitely distant sky pixels as zero disparity, leading to infinite values when using the above formula.</p>
+
+
+<h4>Which vector length is encoded in the ground truth data?</h4>
+<p>While our ground truth files are given in 4K (double the spatial resolution per dimension), the ground truth vectors (disparities, optical flow) relate to the <i>images in full HD resolution</i>. So when using these, there should be no need to divide them by 2. See also the example data loader for Spring <a href="https://github.com/cv-stuttgart/spring_utils" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+
+<h4>Which (stereo) camera settings does Spring use?</h4>
+<p>Spring uses an orthoparallel stereo camera setting, i.e. two cameras parallely pointing into the same direction. The baseline distance between the cameras is 0.065m. Intrinsic camera parameters (available for <i>train</i> and <i>test</i>) are given per sequence in intrinsics.txt, extrinsic camera data / camera poses (available for <i>train</i>) are given in extrinsics.txt. Please note that in some scenes a camera zoom / change of the focal length is used, leading to different intrinsics per frame.
+We additionally provide metric camera focal distances in focaldistance.txt.
+</p>
+
+<h4>Are there nan values in the ground truth files?</h4>
+<p>Yes, very occasionally, there are nan values in the ground truth files, which arise from a bug in the Blender/cycles shading system.</p>
+
+
+<h4>I have further questions!</h4>
+<p>Please use the contact link at the bottom of the page.</p>
+
+{% endblock %}
