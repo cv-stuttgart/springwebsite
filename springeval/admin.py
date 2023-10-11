@@ -56,7 +56,7 @@ class SpringUserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'maildomain', 'university', 'is_verified', 'is_admin')
+    list_display = ('email', 'maildomain', 'university', 'is_active', 'is_verified', 'is_admin')
     list_filter = ('university', 'is_verified', 'is_admin')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -79,7 +79,7 @@ class SpringUserAdmin(UserAdmin):
 
 
 class ResultEntryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'pub_date', 'visibility', 'method_type', 'process_status']
+    list_display = ['name', 'pub_date', 'visibility', 'method_type', 'process_status', 'creator']
     ordering = ('pub_date',)
 
 
