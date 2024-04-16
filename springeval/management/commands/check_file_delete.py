@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
-from springeval.management.commands.evaluation import evaluate_submission_disp1, evaluate_submission_flow, evaluate_submission_sceneflow
 from springeval.models import ResultEntry
 import os
 import traceback
@@ -17,7 +16,8 @@ class Command(BaseCommand):
         for f in Path(UPLOAD_DIRECTORY).iterdir():
             if not f.is_file():
                 print("Strange directory found!", str(f))
-            if not f.suffix == "hdf5":
+                continue
+            if f.suffix != ".hdf5":
                 to_delete.append(f)
                 continue
             parts = str(f.stem).split("__")
@@ -40,5 +40,19 @@ class Command(BaseCommand):
                 continue
             valid_files.append(parts[1:] + [f])
 
-        print(to_delete)
-        print(valid_files)
+        for entryid, imghash, submtype, fullpath in valid_files:
+            try:
+                entry = ResultEntry.objects.get(id=entryid)
+            except ObjectDoesNotExist as e:
+                to_delete.append(fullpath)
+            if entry.imghash.hex != imghash:
+                print("Wrong imghash!", fullpath)
+                to_delete.append(fullpath)
+                continue
+            # if entry.process_status != "WAIT_PROC":
+            #     continue
+
+
+        for d in to_delete:
+            print("DELETE:", str(d))
+        #print(valid_files)
