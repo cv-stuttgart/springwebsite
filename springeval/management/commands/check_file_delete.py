@@ -4,7 +4,7 @@ from springeval.models import ResultEntry
 import os
 from pathlib import Path
 from django.utils import timezone
-import shutil
+import random
 
 
 UPLOAD_DIRECTORY = os.environ["SPRING_UPLOADDIR"]
@@ -65,7 +65,8 @@ class Command(BaseCommand):
                     continue
 
         for d in to_delete:
-            print("DELETE:", str(d))
+            print("marked for deletion:", str(d))
         # only delete one entry at a time:
-        print("deleting file", to_delete[0])
+        delete_file = random.choice(to_delete)
+        print("deleting file", delete_file)
         #os.remove(to_delete[0])
