@@ -69,4 +69,9 @@ class Command(BaseCommand):
         # only delete one entry at a time:
         delete_file = random.choice(to_delete)
         print("deleting file", delete_file)
-        #os.remove(to_delete[0])
+        try:
+            os.remove(to_delete[0])
+            print("succesfully deleted", delete_file)
+        except Exception as e:
+            print(e)
+            print("error while deleting file", delete_file)
