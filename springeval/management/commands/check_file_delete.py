@@ -2,9 +2,9 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from springeval.models import ResultEntry
 import os
-import traceback
 from pathlib import Path
 from django.utils import timezone
+import shutil
 
 
 UPLOAD_DIRECTORY = os.environ["SPRING_UPLOADDIR"]
@@ -54,17 +54,18 @@ class Command(BaseCommand):
                 continue
             age = timezone.now()-entry.pub_date
             if entry.process_status == "SUCCESS":
-                threshold1 = timezone.timedelta(days=180)
+                threshold1 = timezone.timedelta(days=360)
                 if age > threshold1:
                     to_delete.append(fullpath)
                     continue
             else:
-                threshold2 = timezone.timedelta(days=360)
+                threshold2 = timezone.timedelta(days=360*2)
                 if age > threshold2:
                     to_delete.append(fullpath)
                     continue
 
-
         for d in to_delete:
             print("DELETE:", str(d))
-        #print(valid_files)
+        # only delete one entry at a time:
+        print("deleting file", to_delete[0])
+        #os.remove(to_delete[0])
