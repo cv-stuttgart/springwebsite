@@ -45,6 +45,7 @@ class Command(BaseCommand):
                 entry = ResultEntry.objects.get(id=entryid)
             except ObjectDoesNotExist as e:
                 to_delete.append(fullpath)
+                continue
             if entry.imghash.hex != imghash:
                 print("Wrong imghash!", fullpath)
                 to_delete.append(fullpath)
