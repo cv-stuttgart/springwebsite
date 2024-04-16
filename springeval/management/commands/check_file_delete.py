@@ -59,7 +59,7 @@ class Command(BaseCommand):
                     to_delete.append(fullpath)
                     continue
             else:
-                threshold2 = timezone.timedelta(days=180)
+                threshold2 = timezone.timedelta(days=360)
                 if age > threshold2:
                     to_delete.append(fullpath)
                     continue
