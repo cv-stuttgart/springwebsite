@@ -4,6 +4,8 @@ from springeval.models import ResultEntry
 import os
 import traceback
 from pathlib import Path
+from django.utils import timezone
+
 
 UPLOAD_DIRECTORY = os.environ["SPRING_UPLOADDIR"]
 
@@ -50,8 +52,17 @@ class Command(BaseCommand):
                 print("Wrong imghash!", fullpath)
                 to_delete.append(fullpath)
                 continue
-            # if entry.process_status != "WAIT_PROC":
-            #     continue
+            age = timezone.now()-entry.pub_date
+            if entry.process_status == "SUCCESS":
+                threshold1 = timezone.timedelta(days=180)
+                if age > threshold1:
+                    to_delete.append(fullpath)
+                    continue
+            else:
+                threshold2 = timezone.timedelta(days=180)
+                if age > threshold2:
+                    to_delete.append(fullpath)
+                    continue
 
 
         for d in to_delete:
