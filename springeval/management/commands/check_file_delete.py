@@ -17,10 +17,10 @@ class Command(BaseCommand):
         for f in Path(UPLOAD_DIRECTORY).iterdir():
             if not f.is_file():
                 print("Strange directory found!", str(f))
-            if not f.endswith(".hdf5"):
+            if not f.suffix == "hdf5":
                 to_delete.append(f)
                 continue
-            parts = str(f[:-5]).split("__")
+            parts = str(f.stem).split("__")
             if len(parts) != 4:
                 to_delete.append(f)
                 continue
