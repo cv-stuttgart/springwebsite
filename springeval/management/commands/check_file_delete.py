@@ -66,12 +66,13 @@ class Command(BaseCommand):
 
         for d in to_delete:
             print("marked for deletion:", str(d))
-        # only delete one entry at a time:
-        delete_file = random.choice(to_delete)
-        print("deleting file", delete_file)
-        try:
-            os.remove(to_delete[0])
-            print("succesfully deleted", delete_file)
-        except Exception as e:
-            print(e)
-            print("error while deleting file", delete_file)
+        if len(to_delete) > 0:
+            # only delete one entry at a time:
+            delete_file = random.choice(to_delete)
+            print("deleting file", delete_file)
+            try:
+                os.remove(to_delete[0])
+                print("succesfully deleted", delete_file)
+            except Exception as e:
+                print(e)
+                print("error while deleting file", delete_file)
