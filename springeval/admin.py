@@ -4,16 +4,17 @@ from django.contrib.auth.models import Group
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from captcha.fields import CaptchaField
 
 from .models import ResultEntry, SpringUser
 
 
 
 class UserCreationForm(forms.ModelForm):
-    """A form for creating new users. Includes all the required
-    fields, plus a repeated password."""
+    """A form for creating new users. Includes all the required fields plus a repeated password and a captcha."""
     password1 = forms.CharField(label='Password*', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation*', widget=forms.PasswordInput)
+    captcha = CaptchaField(help_text="Enter the characters shown in the image.")
 
     class Meta:
         model = SpringUser
