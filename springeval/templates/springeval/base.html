@@ -20,17 +20,22 @@
 
 
 <header>
-    <div style="max-width:600px;margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:0">
+    <div style="max-width:800px;margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:0">
     <a href="{% url 'springeval:index' %}">
     <picture>
         <source srcset="{% static 'springeval/spring_logo2_dark.svg' %}" media="(prefers-color-scheme: dark)">
-        <img width="100%" height="156px" src="{% static 'springeval/spring_logo2_light.svg' %}" alt="Spring Dataset and Benchmark Logo">
+        <img width="100%" height="156px" max-width="600px" src="{% static 'springeval/spring_logo2_light.svg' %}" alt="Spring Dataset and Benchmark Logo">
     </picture>
     </a>
-    <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>L. Mehl, J. Schmalfuss, A. Jahedi, Y. Nalivayko, A. Bruhn &mdash; University of Stuttgart </i></p>
+    <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>Spring: L. Mehl, J. Schmalfuss, A. Jahedi, Y. Nalivayko, A. Bruhn &mdash; University of Stuttgart </i></p>
+    <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>RobustSpring: J. Schmalfuss, V. Oei, L. Mehl, M. Bartsch, S. Agnihotri, M. Keuper, A. Bruhn</i></p>
     </div>
     <nav>
-        <a href="https://doi.org/10.18419/darus-3376" target="_blank" rel="noopener noreferrer">Download</a>
+        {% if request.path == "/download" %}
+            <a href="{% url 'springeval:download' %}" class="current">Download</a>
+        {% else %}
+            <a href="{% url 'springeval:download' %}">Download</a>
+        {% endif %}
         {% if request.path == "/stereo" %}
             <a href="{% url 'springeval:stereo' %}" class="current">Stereo</a>
         {% else %}

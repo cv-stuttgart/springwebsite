@@ -14,27 +14,162 @@ Afterwards, your account request will be verified by our team. Finally, after su
 
 
 <h4>How does the submission work?</h4>
+<p>
+To participate in the benchmark, follow the steps below to prepare and submit
+your method. You can optionally include robustness evaluation results alongside
+the standard evaluation.
+</p>
 <ol>
-<li>Let your new and interesting approach predict results for the spring test split.</li>
-<ul>
-    <li>You can find code to read/write <code>.flo5</code> and <code>.dsp5</code> files <a href="https://github.com/cv-stuttgart/flow_library/blob/master/flow_IO.py" target="_blank" rel="noopener noreferrer">here</a>.</li>
-    <li>Use the same folder structure, file naming and file formats as in the dataset.</li>
-    <li>For stereo use <code>&lt;rootdir&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code></li>
-    <li>For optical flow use <code>&lt;rootdir&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code></li>
-    <li>For scene flow use the above plus <code>&lt;rootdir&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code></li>
-</ul>
-<li>Use the subsampling executable for submission file(s) generation.</li>
-<ul>
-    <li>Download the <a href="https://cloud.visus.uni-stuttgart.de/index.php/s/Yn6ndkgQ9rvlYCp" target="_blank" rel="noopener noreferrer">subsampling executable(s)</a>.</li>
-    <li>Usage: <code>./{flow|disp1|disp2}_subsampling &lt;rootdir&gt;</code>. A hdf5 submission file is generated in the current directory.</li>
-    <li>Use the disp1 or flow executables for the stereo or optical flow task; use all three for the scene flow task.</li>
-</ul>
-<li>Upload to our benchmark webpage for evaluation.</li>
-<ul>
-    <li>Upload your hdf5 file (for scene flow: your three hdf5 files) under <a href="{% url 'springeval:user' %}">submit</a>.</li>
-    <li>Please allow up to 1-2h until your result is evaluated.</li>
-    <li>All results are by default set to private. You can later choose results to be private, public anonymous or public.</li>
-</ul>
+  <li>
+    <strong>Prepare predictions on the Spring test split.</strong>
+    <ul>
+      <li>
+        You can find Python code to read/write <code>.flo5</code> and
+        <code>.dsp5</code> files
+        <a
+          href="https://github.com/cv-stuttgart/flow_library/blob/master/flow_IO.py"
+          target="_blank"
+          rel="noopener noreferrer"
+          >here</a
+        >.
+      </li>
+      <li>
+        Please follow the exact folder structure, file naming conventions, and
+        formats used in the dataset.
+      </li>
+      <li><strong>Standard evaluation folder structure:</strong></li>
+      <ul>
+        <li>
+          Stereo:
+          <code
+            >&lt;rootdir&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code
+          >
+        </li>
+        <li>
+          Optical Flow:
+          <code
+            >&lt;rootdir&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code
+          >
+        </li>
+        <li>
+          Scene Flow: Add in disparity over time:
+          <code
+            >&lt;rootdir&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code
+          >
+        </li>
+      </ul>
+      <li><strong>Optional: Robustness evaluation</strong></li>
+      <ul>
+        <li>
+          You can optionally submit predictions on corrupted versions of the test set.
+        </li>
+        <li>
+          Use the same folder structure and naming as above, but with an
+          additional top-level folder for the corruption type.
+        </li>
+        <li><strong>Robustness evaluation folder structure:</strong></li>
+        <ul>
+          <li>
+            Stereo:
+            <code
+              >&lt;rootdir&gt;/&lt;corruption&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code
+            >
+          </li>
+          <li>
+            Optical Flow:
+            <code
+              >&lt;rootdir&gt;/&lt;corruption&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code
+            >
+          </li>
+          <li>
+            Scene Flow:
+            <code
+              >&lt;rootdir&gt;/&lt;corruption&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code
+            >
+          </li>
+        </ul>
+        <li>
+          The corruption folders should be named as follows: <code>clean</code>, <code>brightness</code>, <code>contrast</code>, <code>defocus_blur</code>, <code>elastic_transform</code>, <code>fog</code>, <code>frost</code>, <code>gaussian_blur</code>, <code>gaussian_noise</code>, <code>glass_blur</code>, <code>impulse_noise</code>, <code>jpeg_compression</code>, <code>motion_blur</code>, <code>pixelate</code>, <code>rain</code>, <code>saturate</code>, <code>shot_noise</code>, <code>snow</code>, <code>spatter</code>, <code>speckle_noise</code>, <code>zoom_blur</code>.
+        </li>
+      </ul>
+    </ul>
+  </li>
+  <li>
+    <strong>Generate submission file(s) using the subsampling tool.</strong>
+    <ul>
+      <li>
+        Download the subsampling executables from
+        <a
+          href="https://cloud.visus.uni-stuttgart.de/index.php/s/Yn6ndkgQ9rvlYCp"
+          target="_blank"
+          rel="noopener noreferrer"
+          >this link</a
+        >.
+      </li>
+      <li>Run the appropriate tool in your root directory:</li>
+      <ul>
+        <li><code>./disp1_subsampling &lt;rootdir&gt;</code> for stereo</li>
+        <li>
+          <code>./flow_subsampling &lt;rootdir&gt;</code> for optical flow
+        </li>
+        <li>
+          <code>./disp2_subsampling &lt;rootdir&gt;</code> for scene flow
+          (alongside the other two)
+        </li>
+      </ul>
+      <li>
+        <strong>For robustness evaluation</strong>, run the corresponding
+        “robust” executables in your root directory containing the corruption subfolders:</li>
+      <ul>
+        <li>
+          <code>./disp1_robust_subsampling &lt;rootdir&gt;</code>
+          for stereo robustness
+        </li>
+        <li>
+          <code>./flow_robust_subsampling &lt;rootdir&gt;</code>
+          for optical flow robustness
+        </li>
+        <li>
+          <code>./disp2_robust_subsampling &lt;rootdir&gt;</code>
+          for scene flow robustness (alongside the other two)
+        </li>
+      </ul>
+      <li>
+        Each command generates one <code>.hdf5</code> file in the
+        current directory, ready for upload.
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>Submit your results on the benchmark platform.</strong>
+    <ul>
+      <li>
+        Upload your <code>.hdf5</code> file(s) via the
+        <a href="{% url 'springeval:user' %}">submission page</a>.
+      </li>
+      <li>
+        For scene flow, all three <code>.hdf5</code> files must be uploaded.
+      </li>
+      <li>
+        You can optionally upload additional files for robustness evaluation
+        under the same method name.
+      </li>
+      <li>
+        Evaluation may take up to 1–2 hours.
+      </li>
+      <li>
+        All results are private by default. You can later change visibility to:
+        <ul>
+          <li><strong>Private</strong> (only visible to you)</li>
+          <li>
+            <strong>Public Anonymous</strong> (visible on the leaderboard
+            without author info)
+          </li>
+          <li><strong>Public</strong> (visible with author and method name)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
 </ol>
 
 

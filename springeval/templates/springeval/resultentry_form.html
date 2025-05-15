@@ -1,14 +1,62 @@
 {% extends "springeval/base.html" %}
 
 {% block title %}
-<title>Edit Entry</title>
+  <title>Edit Entry</title>
 {% endblock %}
 
 {% block content %}
-
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Update">
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <table>
+    {{ form.as_table }}
+  </table>
+  <input type="submit" value="Update">
 </form>
 
+<script>
+// read the saved method_type from a data-attribute on the body
+const methodType = "{{ object.method_type }}";
+
+function toggleRobustnessFields() {
+  const show = document.getElementById("id_evaluate_robustness").checked;
+  const rows = {
+    ST: [
+      document.getElementById("id_robustness_disp1file")?.closest("tr"),
+      null,
+      null
+    ],
+    FL: [
+      null,
+      null,
+      document.getElementById("id_robustness_flowfile")?.closest("tr")
+    ],
+    SF: [
+      document.getElementById("id_robustness_disp1file")?.closest("tr"),
+      document.getElementById("id_robustness_disp2file")?.closest("tr"),
+      document.getElementById("id_robustness_flowfile")?.closest("tr")
+    ]
+  }[methodType];
+
+  // first hide them all
+  [ "id_robustness_disp1file", "id_robustness_disp2file", "id_robustness_flowfile" ]
+    .forEach(id => {
+      const tr = document.getElementById(id)?.closest("tr");
+      if (tr) tr.style.display = "none";
+    });
+
+  // then show only the relevant ones when toggled on
+  if (show) {
+    rows.forEach(tr => {
+      if (tr) tr.style.display = "";
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  toggleRobustnessFields();
+  document
+    .getElementById("id_evaluate_robustness")
+    .addEventListener("change", toggleRobustnessFields);
+});
+</script>
 {% endblock %}

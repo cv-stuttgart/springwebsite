@@ -126,8 +126,10 @@ class ResultEntry(models.Model):
     process_status = models.CharField(max_length=10, choices=STATUS_CHOICES, blank=False, null=False)
 
     code_url = models.URLField(verbose_name="Link to code", blank=True, null=True)
+    
+    evaluate_robustness = models.BooleanField(default=False)
 
-    # errors
+    # Standard evaluation fields
     err_SF_total = models.FloatField("error SF total", default=-1)
     err_SF_lowdetail = models.FloatField("error SF lowdetail", default=-1)
     err_SF_highdetail = models.FloatField("error SF highdetail", default=-1)
@@ -261,6 +263,77 @@ class ResultEntry(models.Model):
     err_WAUC_Fl_s10_40 = models.FloatField("error WAUC Fl s10-40", default=-1)
     err_WAUC_Fl_s40 = models.FloatField("error WAUC Fl s40+", default=-1)
 
+    # Robust Evaluation Fields
+    robust_1px_D1_total = models.FloatField("robust 1px D1 total", default=-1)
+    robust_Abs_D1_total = models.FloatField("robust Abs D1 total", default=-1)
+    robust_D1_total = models.FloatField("robust D1 total", default=-1)
+    robust_EPE_Fl_total = models.FloatField("robust EPE Fl total", default=-1)
+    robust_Fl_total = models.FloatField("robust Fl total", default=-1)
+    robust_1px_Fl_total = models.FloatField("robust 1px Fl total", default=-1)
+    robust_disp1_1px_total = models.FloatField("robust 1px D1 total (scene flow)", default=-1)
+    robust_disp1_Abs_total = models.FloatField("robust Abs D1 total (scene flow)", default=-1)
+    robust_disp1_D1_total = models.FloatField("robust D1 total (scene flow)", default=-1)
+    robust_disp2_1px_total = models.FloatField("robust 1px D2 total (scene flow)", default=-1)
+    robust_disp2_Abs_total = models.FloatField("robust Abs D2 total (scene flow)", default=-1)
+    robust_disp2_D2_total = models.FloatField("robust D2 total (scene flow)", default=-1)
+    robust_flow_EPE_total = models.FloatField("robust EPE Fl total (scene flow)", default=-1)
+    robust_flow_Fl_total = models.FloatField("robust Fl total (scene flow)", default=-1)
+    robust_flow_1px_total = models.FloatField("robust 1px Fl total (scene flow)", default=-1)
 
     def __str__(self):
         return self.name
+
+
+class RobustCorruptionResult(models.Model):
+    CORRUPTION_CHOICES = (
+        ("brightness", "Brightness"),
+        ("contrast", "Contrast"),
+        ("saturate", "Saturate"),
+        ("defocus_blur", "Defocus Blur"),
+        ("gaussian_blur", "Gaussian Blur"),
+        ("glass_blur", "Glass Blur"),
+        ("motion_blur", "Motion Blur"),
+        ("zoom_blur", "Zoom Blur"),
+        ("gaussian_noise", "Gaussian Noise"),
+        ("impulse_noise", "Impulse Noise"),
+        ("speckle_noise", "Speckle Noise"),
+        ("shot_noise", "Shot Noise"),
+        ("pixelate", "Pixelate"),
+        ("jpeg_compression", "JPEG Compression"),
+        ("elastic_transform", "Elastic Transform"),
+        ("fog", "Fog"),
+        ("frost", "Frost"),
+        ("rain", "Rain"),
+        ("snow", "Snow"),
+        ("spatter", "Spatter"),
+    )
+    
+    result_entry = models.ForeignKey('ResultEntry', related_name='robust_corruption_results', on_delete=models.CASCADE)
+    corruption_name = models.CharField(max_length=50, choices=CORRUPTION_CHOICES)
+    
+    # For disparity robust evaluation
+    robust_1px_D1 = models.FloatField("robust 1px D1", default=-1)
+    robust_Abs_D1 = models.FloatField("robust Abs D1", default=-1)
+    robust_D1 = models.FloatField("robust D1", default=-1)
+    
+    # For optical flow robust evaluation
+    robust_EPE_Fl = models.FloatField("robust EPE Fl", default=-1)
+    robust_Fl = models.FloatField("robust Fl", default=-1)
+    robust_1px_Fl = models.FloatField("robust 1px Fl", default=-1)
+
+    # For scene flow robust evaluation
+    # disp1
+    robust_disp1_1px = models.FloatField("robust 1px D1 total (scene flow)", default=-1)
+    robust_disp1_Abs = models.FloatField("robust Abs D1 total (scene flow)", default=-1)
+    robust_disp1_D1 = models.FloatField("robust D1 total (scene flow)", default=-1)
+    # disp2
+    robust_disp2_1px = models.FloatField("robust 1px D2 total (scene flow)", default=-1)
+    robust_disp2_Abs = models.FloatField("robust Abs D2 total (scene flow)", default=-1)
+    robust_disp2_D2 = models.FloatField("robust D2 total (scene flow)", default=-1)
+    # flow
+    robust_flow_EPE = models.FloatField("robust EPE Fl total (scene flow)", default=-1)
+    robust_flow_Fl = models.FloatField("robust Fl total (scene flow)", default=-1)
+    robust_flow_1px = models.FloatField("robust 1px Fl total (scene flow)", default=-1)
+
+    def __str__(self):
+        return f"{self.result_entry.name} - {self.corruption_name}"

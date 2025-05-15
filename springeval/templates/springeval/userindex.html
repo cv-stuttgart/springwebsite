@@ -2,43 +2,189 @@
 
 {% block content %}
 
-{% if user.can_upload %}
-<nav>
-<a href="{% url 'springeval:submit' %}">Create new submission</a>
-</nav>
-{% else %}
-<nav>
-<a><strike>Create new submission</strike></a>
-</nav>
-{% endif %}
+<h3>Submission</h3>
+
+  {% if user.can_upload %}
+    <div style="text-align:center; margin: 1.5rem 0;">
+      <a href="{% url 'springeval:submit' %}"
+         class="btn-primary btn-lg"
+         style="
+           display: inline-block;
+           background-color: #007bff;
+           color: #fff;
+           font-size: 1.25rem;
+           font-weight: 600;
+           text-decoration: none;
+           padding: 0.75rem 1.5rem;
+           border-radius: 0.375rem;
+           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+           transition: background-color 0.2s, box-shadow 0.2s;
+         "
+         onmouseover="this.style.backgroundColor='#0056b3'; this.style.boxShadow='0 6px 8px rgba(0,0,0,0.15)';"
+         onmouseout="this.style.backgroundColor='#007bff'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';"
+      >
+        Create New Submission
+      </a>
+    </div>
+  {% else %}
+    <div style="text-align:center; margin: 1.5rem 0;">
+      <a style="
+           display: inline-block;
+           background-color: #6c757d;
+           color: #fff;
+           font-size: 1.25rem;
+           font-weight: 600;
+           text-decoration: none;
+           padding: 0.75rem 1.5rem;
+           border-radius: 0.375rem;
+         "><strike>Create New Submission</strike></a>
+    </div>
+  {% endif %}
+
+
 
 {% for reason in user.getreasons %}
 <p class="reason">&#x2716; {{reason}}</p>
 {% endfor %}
 
-<h4>Submission instructions</h4>
+<h4>Instructions</h4>
+<p>
+  To participate in the benchmark, prepare and submit your method as follows.
+  You can optionally include robustness evaluation results alongside the
+  standard evaluation.
+</p>
 <ol>
-<li>Let your new and interesting approach predict results for the spring test split.</li>
-<ul>
-    <li>You can find code to read/write <code>.flo5</code> and <code>.dsp5</code> files <a href="https://github.com/cv-stuttgart/flow_library/blob/master/flow_IO.py" target="_blank" rel="noopener noreferrer">here</a>.</li>
-    <li>Use the same folder structure, file naming and file formats as in the dataset.</li>
-    <li>For stereo use <code>&lt;rootdir&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code></li>
-    <li>For optical flow use <code>&lt;rootdir&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code></li>
-    <li>For scene flow use the above plus <code>&lt;rootdir&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code></li>
-</ul>
-<li>Use the subsampling executable for submission file(s) generation.</li>
-<ul>
-    <li>Download the <a href="https://cloud.visus.uni-stuttgart.de/index.php/s/Yn6ndkgQ9rvlYCp" target="_blank" rel="noopener noreferrer">subsampling executable(s)</a>.</li>
-    <li>Usage: <code>./{flow|disp1|disp2}_subsampling &lt;rootdir&gt;</code>. A hdf5 submission file is generated in the current directory.</li>
-    <li>Use the disp1 or flow executables for the stereo or optical flow task; use all three for the scene flow task.</li>
-</ul>
-<li>Upload to our benchmark webpage for evaluation.</li>
-<ul>
-    <li>Upload your hdf5 file (for scene flow: your three hdf5 files) using the button above.</li>
-    <li>Please allow up to 1-2h until your result is evaluated.</li>
-    <li>All results are by default set to private. You can later choose results to be private, public anonymous or public.</li>
-</ul>
-
+  <li>
+    <strong>Prepare predictions on the Spring test split.</strong>
+    <ul>
+      <li>
+        Use our Python I/O utilities for <code>.flo5</code> and
+        <code>.dsp5</code>:
+        <a href="https://github.com/cv-stuttgart/flow_library/blob/master/flow_IO.py"
+           target="_blank" rel="noopener noreferrer">flow_IO.py</a>.
+      </li>
+      <li>
+        Follow the exact folder structure, file naming conventions, and formats
+        used in the dataset.
+      </li>
+      <li><strong>Standard evaluation folder structure:</strong></li>
+      <ul>
+        <li>
+          Stereo:
+          <code>&lt;rootdir&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code>
+        </li>
+        <li>
+          Optical Flow:
+          <code>&lt;rootdir&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code>
+        </li>
+        <li>
+          Scene Flow (add disparity over time):
+          <code>&lt;rootdir&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code>
+        </li>
+      </ul>
+      <li><strong>Optional: Robustness evaluation</strong></li>
+      <ul>
+        <li>
+          Submit predictions on corrupted versions of the test set (e.g.,
+          fog, noise, blur).
+        </li>
+        <li>
+          Use the same naming conventions, with an extra top‐level folder per
+          corruption.
+        </li>
+        <li><strong>Robustness evaluation folder structure:</strong></li>
+        <ul>
+          <li>
+            Stereo:
+            <code>&lt;rootdir&gt;/&lt;corruption&gt;/####/disp1_{left|right}/disp1_{left|right}_####.dsp5</code>
+          </li>
+          <li>
+            Optical Flow:
+            <code>&lt;rootdir&gt;/&lt;corruption&gt;/####/flow_{FW|BW}_{left|right}/flow_{FW|BW}_{left|right}_####.flo5</code>
+          </li>
+          <li>
+            Scene Flow:
+            <code>&lt;rootdir&gt;/&lt;corruption&gt;/####/disp2_{FW|BW}_{left|right}/disp2_{FW|BW}_{left|right}_####.dsp5</code>
+          </li>
+        </ul>
+        <li>
+          Corruption folder names: <code>clean</code>, <code>brightness</code>,
+          <code>contrast</code>, <code>defocus_blur</code>,
+          <code>elastic_transform</code>, <code>fog</code>, <code>frost</code>,
+          <code>gaussian_blur</code>, <code>gaussian_noise</code>,
+          <code>glass_blur</code>, <code>impulse_noise</code>,
+          <code>jpeg_compression</code>, <code>motion_blur</code>,
+          <code>pixelate</code>, <code>rain</code>, <code>saturate</code>,
+          <code>shot_noise</code>, <code>snow</code>, <code>spatter</code>,
+          <code>speckle_noise</code>, <code>zoom_blur</code>.
+        </li>
+      </ul>
+    </ul>
+  </li>
+  <li>
+    <strong>Generate submission file(s) with subsampling tools.</strong>
+    <ul>
+      <li>
+        Download the executables:
+        <a href="https://cloud.visus.uni-stuttgart.de/index.php/s/Yn6ndkgQ9rvlYCp"
+           target="_blank" rel="noopener noreferrer">subsampling tools</a>.
+      </li>
+      <li>Run in your <code>rootdir</code>:</li>
+      <ul>
+        <li><code>./disp1_subsampling &lt;rootdir&gt;</code> — stereo</li>
+        <li><code>./flow_subsampling &lt;rootdir&gt;</code> — optical flow</li>
+        <li>
+          <code>./disp2_subsampling &lt;rootdir&gt;</code> — scene flow
+          (with the other two)
+        </li>
+      </ul>
+      <li>
+        <strong>For robustness evaluation</strong>, run the corresponding
+        “robust” executables in your root directory containing the corruption subfolders:</li>
+      <ul>
+        <li>
+          <code>./disp1_robust_subsampling &lt;rootdir&gt;</code>
+          for stereo robustness
+        </li>
+        <li>
+          <code>./flow_robust_subsampling &lt;rootdir&gt;</code>
+          for optical flow robustness
+        </li>
+        <li>
+          <code>./disp2_robust_subsampling &lt;rootdir&gt;</code>
+          for scene flow robustness (alongside the other two)
+        </li>
+      </ul>
+      <li>
+        Each command generates one <code>.hdf5</code> file in the
+        current directory, ready for upload.
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>Submit results on the benchmark platform.</strong>
+    <ul>
+      <li>
+        Click the “Create new submission” button above and upload your
+        <code>.hdf5</code> file(s).
+      </li>
+      <li>
+        For scene flow, upload all three files. You may also upload additional
+        robustness evaluation files under the same method entry.
+      </li>
+      <li>
+        Evaluation takes ~1–2 hours. You’ll receive a notification when done.
+      </li>
+      <li>
+        Results default to private. Later you can switch visibility to:
+        <ul>
+          <li><strong>Private</strong> (only you)</li>
+          <li><strong>Public Anonymous</strong> (no author info)</li>
+          <li><strong>Public</strong> (with author and method name)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
 </ol>
 
 

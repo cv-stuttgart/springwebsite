@@ -462,3 +462,11 @@ def readMap5File(filename):
         if "map" not in f.keys():
             raise IOError(f"File {filename} does not have a 'map' key. Is this a valid map5 file?")
         return f["map"][()]
+
+
+def readRobustnessFile(filename, dataset_name):
+    results = {}
+    with h5py.File(filename, 'r') as f:
+        for group in f.keys():
+            results[group] = f[group][dataset_name][:]
+    return results

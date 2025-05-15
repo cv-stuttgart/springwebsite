@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from pprint import pprint
 import warnings
 import matplotlib
-
+import h5py
 
 
 test_seq = [(3, 131), (19, 111), (28, 39), (29, 135), (31, 73), (34, 47), (35, 120), (40, 111), (42, 116), (46, 117)]
@@ -475,3 +475,214 @@ def evaluate_submission_sceneflow(d1_file, d2_file, fl_file, img_outputdir):
         plt.imsave(os.path.join(img_outputdir, f"sferrimg_{i:02d}.png"), imgs_sf[i], cmap="gray", vmin=0, vmax=1)
 
     return errors_dict
+
+
+def compute_flow_errors(baseline, submission):
+    submission = submission.astype(np.float64)
+    baseline = baseline.astype(np.float64)
+    
+    # epe
+    epe = np.linalg.norm(baseline - submission, axis=-1)
+    epe_total = np.nanmean(epe)
+    
+    # Fl error
+    baseline_norm = np.linalg.norm(baseline, axis=-1)
+    fl = (epe > 3) & (epe > 0.05 * baseline_norm)
+    fl_total = 100 * np.sum(fl) / np.sum(~np.isnan(epe))
+    
+    # 1px error
+    onepx = epe > 1
+    onepx_total = 100 * np.sum(onepx) / np.sum(~np.isnan(epe))
+    
+    return epe_total, fl_total, onepx_total
+
+
+def compute_disp_errors(baseline, submission):
+    submission = submission.astype(np.float64)
+    baseline = baseline.astype(np.float64)
+    
+    # absolute error
+    epe = np.abs(baseline.astype(np.float32) - submission.astype(np.float32))
+    abs_total = np.nanmean(epe)
+    
+    # 1px error
+    onepx = epe > 1
+    onepx_total = 100 * np.sum(onepx) / np.sum(~np.isnan(epe))
+    
+    # D1 error
+    disp_len = np.max(np.abs(baseline))
+    d1 = (epe > 3) & (epe > 0.05 * disp_len)
+    d1_total = 100 * d1.sum() / (~np.isnan(epe)).sum()
+    
+    return onepx_total, abs_total, d1_total
+
+
+def evaluate_robust_submission_flow(submission_file):
+    flow_data = flow_IO.readRobustnessFile(submission_file, "flow")
+    
+    if "clean" not in flow_data:
+        raise ValueError("Baseline group 'clean' not found in " + submission_file)
+    baseline = flow_data["clean"]
+    
+    by_corruption = {}
+    epe_list, fl_list, onepx_list = [], [], []
+    for corruption, data in flow_data.items():
+        if corruption == "clean":
+            continue
+        epe_total, fl_total, onepx_total = compute_flow_errors(baseline, data)
+        by_corruption[corruption] = {
+            "epe_total": epe_total,
+            "fl_total": fl_total,
+            "onepx_total": onepx_total
+        }
+        epe_list.append(epe_total)
+        fl_list.append(fl_total)
+        onepx_list.append(onepx_total)
+        
+    overall = {
+        "EPE_Fl_total": np.mean(epe_list) if epe_list else -1,
+        "Fl_total": np.mean(fl_list) if fl_list else -1,
+        "1px_Fl_total": np.mean(onepx_list) if onepx_list else -1
+    }
+    
+    print("Overall results:")
+    print("EPE: ", overall["EPE_Fl_total"])
+    print("Fl: ", overall["Fl_total"])
+    print("1px: ", overall["1px_Fl_total"])
+    
+    print("Corruption results:")
+    for corruption, values in by_corruption.items():
+        print(f"{corruption}: EPE: {values['epe_total']}, Fl: {values['fl_total']}, 1px: {values['onepx_total']}")
+    
+    return {"total": overall, "by_corruption": by_corruption}
+
+
+def evaluate_robust_submission_disp1(submission_file):
+    disp1_data = flow_IO.readRobustnessFile(submission_file, "disparity")
+    
+    if "clean" not in disp1_data:
+        raise ValueError("Baseline group 'clean' not found in " + submission_file)
+    baseline = disp1_data["clean"]
+    
+    by_corruption = {}
+    onepx_list, abs_list, d1_list = [], [], []
+    for corruption, data in disp1_data.items():
+        if corruption == "clean":
+            continue
+        onepx_total, abs_total, d1_total = compute_disp_errors(baseline, data)
+        by_corruption[corruption] = {
+            "onepx_total": onepx_total,
+            "abs_total": abs_total,
+            "d1_total": d1_total
+        }
+        onepx_list.append(onepx_total)
+        abs_list.append(abs_total)
+        d1_list.append(d1_total)
+    
+    overall = {
+        "1px_D1_total": np.mean(onepx_list) if onepx_list else -1,
+        "Abs_D1_total": np.mean(abs_list) if abs_list else -1,
+        "D1_total": np.mean(d1_list) if d1_list else -1
+    }
+
+    print("Overall results:")
+    print("1px: ", overall["1px_D1_total"])
+    print("Abs: ", overall["Abs_D1_total"])
+    print("D1: ", overall["D1_total"])
+
+    print("Corruption results:")
+    for corruption, values in by_corruption.items():
+        print(f"{corruption}: 1px: {values['onepx_total']}, Abs: {values['abs_total']}, D1: {values['d1_total']}")
+    
+    return {"total": overall, "by_corruption": by_corruption}
+
+
+def evaluate_robust_submission_sceneflow(d1_file, d2_file, fl_file):
+    disp1_data = flow_IO.readRobustnessFile(d1_file, "disparity")
+    disp2_data = flow_IO.readRobustnessFile(d2_file, "disparity")
+    flow_data  = flow_IO.readRobustnessFile(fl_file, "flow")
+    
+    for data, name in zip((disp1_data, disp2_data, flow_data), ("disp1", "disp2", "flow")):
+        if "clean" not in data:
+            raise ValueError("Baseline group 'clean' not found in " + name + " file")
+    
+    overall_disp1_onepx, overall_disp1_abs, overall_disp1_d1 = [], [], []
+    overall_disp2_onepx, overall_disp2_abs, overall_disp2_d2 = [], [], []
+    overall_flow_epe, overall_flow_fl, overall_flow_onepx = [], [], []
+    by_corruption = {}
+    
+    for corruption in disp1_data.keys():
+        if corruption == "clean":
+            continue
+        
+        onepx_total_d1, abs_total_d1, d1_total = compute_disp_errors(disp1_data["clean"], disp1_data[corruption])
+        onepx_total_d2, abs_total_d2, d2_total = compute_disp_errors(disp2_data["clean"], disp2_data[corruption])
+        epe_total, fl_total, onepx_total_flow = compute_flow_errors(flow_data["clean"], flow_data[corruption])
+        
+        by_corruption[corruption] = {
+            "disp1": {
+                "onepx_total": onepx_total_d1,
+                "abs_total": abs_total_d1,
+                "d1_total": d1_total
+            },
+            "disp2": {
+                "onepx_total": onepx_total_d2,
+                "abs_total": abs_total_d2,
+                "d1_total": d2_total
+            },
+            "flow": {
+                "epe_total": epe_total,
+                "fl_total": fl_total,
+                "onepx_total": onepx_total_flow
+            }
+        }
+        
+        overall_disp1_onepx.append(onepx_total_d1)
+        overall_disp1_abs.append(abs_total_d1)
+        overall_disp1_d1.append(d1_total)
+        
+        overall_disp2_onepx.append(onepx_total_d2)
+        overall_disp2_abs.append(abs_total_d2)
+        overall_disp2_d2.append(d2_total)
+        
+        overall_flow_epe.append(epe_total)
+        overall_flow_fl.append(fl_total)
+        overall_flow_onepx.append(onepx_total_flow)
+    
+    overall = {
+        "disp1": {
+            "disp1_1px_total": np.mean(overall_disp1_onepx) if overall_disp1_onepx else -1,
+            "disp1_Abs_total": np.mean(overall_disp1_abs) if overall_disp1_abs else -1,
+            "disp1_D1_total": np.mean(overall_disp1_d1) if overall_disp1_d1 else -1
+        },
+        "disp2": {
+            "disp2_1px_total": np.mean(overall_disp2_onepx) if overall_disp2_onepx else -1,
+            "disp2_Abs_total": np.mean(overall_disp2_abs) if overall_disp2_abs else -1,
+            "disp2_D2_total": np.mean(overall_disp2_d2) if overall_disp2_d2 else -1
+        },
+        "flow": {
+            "flow_EPE_total": np.mean(overall_flow_epe) if overall_flow_epe else -1,
+            "flow_Fl_total": np.mean(overall_flow_fl) if overall_flow_fl else -1,
+            "flow_1px_total": np.mean(overall_flow_onepx) if overall_flow_onepx else -1
+        }
+    }
+
+    print("Overall results:")
+    print("Disp1: ", overall["disp1"]["disp1_1px_total"])
+    print("Disp2: ", overall["disp2"]["disp2_1px_total"])
+    print("Flow: ", overall["flow"]["flow_EPE_total"])
+    print("Disp1: ", overall["disp1"]["disp1_Abs_total"])
+    print("Disp2: ", overall["disp2"]["disp2_Abs_total"])
+    print("Flow: ", overall["flow"]["flow_Fl_total"])
+    print("Disp1: ", overall["disp1"]["disp1_D1_total"])
+    print("Disp2: ", overall["disp2"]["disp2_D2_total"])
+    print("Flow: ", overall["flow"]["flow_1px_total"])
+
+    print("Corruption results:")
+    for corruption, values in by_corruption.items():
+        print(f"{corruption}: Disp1: 1px: {values['disp1']['onepx_total']}, Abs: {values['disp1']['abs_total']}, D1: {values['disp1']['d1_total']}")
+        print(f"{corruption}: Disp2: 1px: {values['disp2']['onepx_total']}, Abs: {values['disp2']['abs_total']}, D2: {values['disp2']['d2_total']}")
+        print(f"{corruption}: Flow: EPE: {values['flow']['epe_total']}, Fl: {values['flow']['fl_total']}, 1px: {values['flow']['onepx_total']}")
+        print()
+    
+    return {"total": overall, "by_corruption": by_corruption}
