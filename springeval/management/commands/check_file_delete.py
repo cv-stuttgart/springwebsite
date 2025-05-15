@@ -29,7 +29,7 @@ class Command(BaseCommand):
             if parts[0] != "upload":
                 to_delete.append(f)
                 continue
-            if parts[3] not in ["disp1", "disp2", "flow"]:
+            if parts[3] not in ["disp1", "disp2", "flow", "robust_disp1", "robust_disp2", "robust_flow"]:
                 to_delete.append(f)
                 continue
             if len(parts[2]) != 32:

@@ -617,7 +617,142 @@ Anonymous.
     </tr>
 </table>
 
+{% endif %}
 
+
+
+<!-- New Robustness Evaluation Section -->
+{% if resultentry.evaluate_robustness %}
+<h4>Robustness Evaluation (Overall)</h4>
+{% if resultentry.method_type == "ST" %}
+<table>
+    <tr>
+        <th>1px<br>total</th>
+        <th>Abs<br>total</th>
+        <th>D1<br>total</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.robust_1px_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_Abs_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_D1_total|floatformat:3 }}</td>
+    </tr>
+</table>
+{% elif resultentry.method_type == "FL" %}
+<table>
+    <tr>
+        <th>EPE<br>total</th>
+        <th>Fl<br>total</th>
+        <th>1px<br>total</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.robust_EPE_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_1px_Fl_total|floatformat:3 }}</td>
+    </tr>
+</table>
+{% elif resultentry.method_type == "SF" %}
+<table>
+    <tr>
+        <th colspan="3">Disparity 1</th>
+        <th colspan="3">Disparity 2</th>
+        <th colspan="3">Optical Flow</th>
+    </tr>
+    <tr>
+        <th>1px<br>total</th>
+        <th>Abs<br>total</th>
+        <th>D1<br>total</th>
+        <th>1px<br>total</th>
+        <th>Abs<br>total</th>
+        <th>D2<br>total</th>
+        <th>EPE<br>total</th>
+        <th>Fl<br>total</th>
+        <th>1px<br>total</th>
+    </tr>
+    <tr>
+        <td>{{ resultentry.robust_disp1_1px_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_disp1_Abs_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_disp1_D1_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_disp2_1px_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_disp2_Abs_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_disp2_D2_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_flow_EPE_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_flow_Fl_total|floatformat:3 }}</td>
+        <td>{{ resultentry.robust_flow_1px_total|floatformat:3 }}</td>
+    </tr>
+</table>
+{% endif %}
+
+<h4>Robustness Evaluation (Per-Corruption)</h4>
+{% if resultentry.method_type == "ST" %}
+<table>
+    <tr>
+        <th>Corruption</th>
+        <th>1px</th>
+        <th>Abs</th>
+        <th>D1</th>
+    </tr>
+    {% for rc in resultentry.robust_corruption_results.all %}
+    <tr>
+        <td>{{ rc.get_corruption_name_display }}</td>
+        <td>{{ rc.robust_1px_D1|floatformat:3 }}</td>
+        <td>{{ rc.robust_Abs_D1|floatformat:3 }}</td>
+        <td>{{ rc.robust_D1|floatformat:3 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% elif resultentry.method_type == "FL" %}
+<table>
+    <tr>
+        <th>Corruption</th>
+        <th>EPE</th>
+        <th>Fl</th>
+        <th>1px</th>
+    </tr>
+    {% for rc in resultentry.robust_corruption_results.all %}
+    <tr>
+        <td>{{ rc.get_corruption_name_display }}</td>
+        <td>{{ rc.robust_EPE_Fl|floatformat:3 }}</td>
+        <td>{{ rc.robust_Fl|floatformat:3 }}</td>
+        <td>{{ rc.robust_1px_Fl|floatformat:3 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% elif resultentry.method_type == "SF" %}
+<table>
+    <tr>
+        <th>Corruption</th>
+        <th colspan="3">Disparity 1</th>
+        <th colspan="3">Disparity 2</th>
+        <th colspan="3">Optical Flow</th>
+    </tr>
+    <tr>
+        <th></th>
+        <th>1px</th>
+        <th>Abs</th>
+        <th>D1</th>
+        <th>1px</th>
+        <th>Abs</th>
+        <th>D2</th>
+        <th>EPE</th>
+        <th>Fl</th>
+        <th>1px</th>
+    </tr>
+    {% for rc in resultentry.robust_corruption_results.all %}
+    <tr>
+        <td>{{ rc.get_corruption_name_display }}</td>
+        <td>{{ rc.robust_disp1_1px|floatformat:3 }}</td>
+        <td>{{ rc.robust_disp1_Abs|floatformat:3 }}</td>
+        <td>{{ rc.robust_disp1_D1|floatformat:3 }}</td>
+        <td>{{ rc.robust_disp2_1px|floatformat:3 }}</td>
+        <td>{{ rc.robust_disp2_Abs|floatformat:3 }}</td>
+        <td>{{ rc.robust_disp2_D2|floatformat:3 }}</td>
+        <td>{{ rc.robust_flow_EPE|floatformat:3 }}</td>
+        <td>{{ rc.robust_flow_Fl|floatformat:3 }}</td>
+        <td>{{ rc.robust_flow_1px|floatformat:3 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
 {% endif %}
 
 {% load static %}

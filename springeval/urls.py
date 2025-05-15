@@ -16,4 +16,5 @@ urlpatterns = [
     path('accounts/signup', views.signup, name="signup"),
     path('activate/<slug:uidb64>/<slug:token>/', views.activate, name='activate'),
     path('faq', TemplateView.as_view(template_name="springeval/faq.html"), name="faq"),
+    path('download', TemplateView.as_view(template_name="springeval/download.html"), name="download"),
 ]

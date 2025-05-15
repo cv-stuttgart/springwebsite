@@ -1,10 +1,34 @@
 {% extends "springeval/base.html" %}
+{% load na_filters %}
 
 {% block title %}
 <title>Optical Flow Evaluation &ndash; The Spring Dataset &amp; Benchmark</title>
 {% endblock %}
 
 {% block content %}
+
+<p>
+    Show:
+    {% if display == "both" or not display %}
+        <strong>All</strong>
+    {% else %}
+        <a href="{% url 'springeval:opticalflow' %}">All</a>
+    {% endif %}
+    |
+    {% if display == "accuracy" %}
+        <strong>Accuracy</strong>
+    {% else %}
+        <a href="{% url 'springeval:opticalflow' %}?display=accuracy">Accuracy</a>
+    {% endif %}
+    |
+    {% if display == "robustness" %}
+        <strong>Robustness</strong>
+    {% else %}
+        <a href="{% url 'springeval:opticalflow' %}?display=robustness">Robustness</a>
+    {% endif %}
+</p>
+
+{% with display=request.GET.display|default:"both" %}
 
 <p style="margin-bottom:0;">&#x1F4A1; Please note that methods marked <i>"submitted by spring team"</i> have not been finetuned on Spring.</p>
 
@@ -15,56 +39,109 @@
     <tr>
         <th style="width:0;"></th>
         <th style="width:100%;">Name</th>
+        
+        {# Accuracy Columns #}
+        {% if display == "accuracy" or display == "both" %}
         <th class="leftbig clickable">
-            <a href="{% url 'springeval:opticalflow' %}">1px {% if sortby == "err_1px_Fl_total" %}&#9650;{% endif %}<br>total</a>
-        </th>
-        <th class="leftbig clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_lowdetail">1px {% if sortby == "err_1px_Fl_lowdetail" %}&#9650;{% endif %}<br>low-det.</a>
-        </th>
-        <th class="clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_highdetail">1px {% if sortby == "err_1px_Fl_highdetail" %}&#9650;{% endif %}<br>high-det.</a>
-        </th>
-        <th class="leftbig clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_matched">1px {% if sortby == "err_1px_Fl_matched" %}&#9650;{% endif %}<br>matched</a>
-        </th>
-        <th class="clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_unmatched">1px {% if sortby == "err_1px_Fl_unmatched" %}&#9650;{% endif %}<br>unmat.</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_total">
+                1px {% if sortby == "err_1px_Fl_total" %}&#9650;{% endif %}<br>total
+            </a>
         </th>
         <th class="leftbig clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_rigid">1px {% if sortby == "err_1px_Fl_rigid" %}&#9650;{% endif %}<br>rigid</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_lowdetail">
+                1px {% if sortby == "err_1px_Fl_lowdetail" %}&#9650;{% endif %}<br>low-det.
+            </a>
         </th>
         <th class="clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_nonrigid">1px {% if sortby == "err_1px_Fl_nonrigid" %}&#9650;{% endif %}<br>non-rig.</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_highdetail">
+                1px {% if sortby == "err_1px_Fl_highdetail" %}&#9650;{% endif %}<br>high-det.
+            </a>
         </th>
         <th class="leftbig clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_notsky">1px {% if sortby == "err_1px_Fl_notsky" %}&#9650;{% endif %}<br>not sky</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_matched">
+                1px {% if sortby == "err_1px_Fl_matched" %}&#9650;{% endif %}<br>matched
+            </a>
         </th>
         <th class="clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_sky">1px {% if sortby == "err_1px_Fl_sky" %}&#9650;{% endif %}<br>sky</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_unmatched">
+                1px {% if sortby == "err_1px_Fl_unmatched" %}&#9650;{% endif %}<br>unmat.
+            </a>
         </th>
         <th class="leftbig clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_s0_10">1px {% if sortby == "err_1px_Fl_s0_10" %}&#9650;{% endif %}<br>s0-10</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_rigid">
+                1px {% if sortby == "err_1px_Fl_rigid" %}&#9650;{% endif %}<br>rigid
+            </a>
         </th>
         <th class="clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_s10_40">1px {% if sortby == "err_1px_Fl_s10_40" %}&#9650;{% endif %}<br>s10-40</a>
-        </th>
-        <th class="clickable">
-        <a href="{% url 'springeval:opticalflow' %}?s=err_1px_Fl_s40">1px {% if sortby == "err_1px_Fl_s40" %}&#9650;{% endif %}<br>s40+</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_nonrigid">
+                1px {% if sortby == "err_1px_Fl_nonrigid" %}&#9650;{% endif %}<br>non-rig.
+            </a>
         </th>
         <th class="leftbig clickable">
-        <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:opticalflow' %}?s=err_EPE_Fl_total">EPE {% if sortby == "err_EPE_Fl_total" %}&#9650;{% endif %}</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_notsky">
+                1px {% if sortby == "err_1px_Fl_notsky" %}&#9650;{% endif %}<br>not sky
+            </a>
         </th>
         <th class="clickable">
-        <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:opticalflow' %}?s=err_Fl_total">Fl {% if sortby == "err_Fl_total" %}&#9650;{% endif %}</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_sky">
+                1px {% if sortby == "err_1px_Fl_sky" %}&#9650;{% endif %}<br>sky
+            </a>
+        </th>
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_s0_10">
+                1px {% if sortby == "err_1px_Fl_s0_10" %}&#9650;{% endif %}<br>s0-10
+            </a>
         </th>
         <th class="clickable">
-        <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:opticalflow' %}?s=err_WAUC_Fl_total">WAUC {% if sortby == "-err_WAUC_Fl_total" %}&#9660;{% endif %}</a>
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_s10_40">
+                1px {% if sortby == "err_1px_Fl_s10_40" %}&#9650;{% endif %}<br>s10-40
+            </a>
         </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_1px_Fl_s40">
+                1px {% if sortby == "err_1px_Fl_s40" %}&#9650;{% endif %}<br>s40+
+            </a>
+        </th>
+        <th class="leftbig clickable">
+            <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_EPE_Fl_total">
+                EPE {% if sortby == "err_EPE_Fl_total" %}&#9650;{% endif %}
+            </a>
+        </th>
+        <th class="clickable">
+            <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_Fl_total">
+                Fl {% if sortby == "err_Fl_total" %}&#9650;{% endif %}
+            </a>
+        </th>
+        <th class="clickable">
+            <a style="padding-top:1.05rem;padding-bottom:1.05rem" href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=err_WAUC_Fl_total">
+                WAUC {% if sortby == "-err_WAUC_Fl_total" %}&#9660;{% endif %}
+            </a>
+        </th>
+        {% endif %}
+        
+        {# Robustness Columns #}
+        {% if display == "robustness" or display == "both" %}
+        <th class="leftbig clickable">
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=robust_EPE_Fl_total">
+                robust {% if sortby == "robust_EPE_Fl_total" %}&#9650;{% endif %}<br>EPE
+            </a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=robust_Fl_total">
+                robust {% if sortby == "robust_Fl_total" %}&#9650;{% endif %}<br>Fl
+            </a>
+        </th>
+        <th class="clickable">
+            <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=robust_1px_Fl_total">
+                robust {% if sortby == "robust_1px_Fl_total" %}&#9650;{% endif %}<br>1px
+            </a>
+        </th>
+        {% endif %}
     </tr>
     <tr>
-    <td colspan="11" class="citation">
-        &nbsp;
-    </td>
+        <td colspan="{% if display == 'both' %}20{% elif display == 'robustness' %}5{% else %}17{% endif %}" class="citation">
+            &nbsp;
+        </td>
     </tr>
     {% for entry in entries_list %}
     <tr>
@@ -83,25 +160,32 @@
                 {% endif %}
             </div>
         </td>
-        <td class="num2 leftbig">{{ entry.err_1px_Fl_total|floatformat:3 }}</td>
-        <td class="num2 leftbig">{{ entry.err_1px_Fl_lowdetail|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_1px_Fl_highdetail|floatformat:3 }}</td>
-        <td class="num2 leftbig">{{ entry.err_1px_Fl_matched|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_1px_Fl_unmatched|floatformat:3 }}</td>
-        <td class="num2 leftbig">{{ entry.err_1px_Fl_rigid|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_1px_Fl_nonrigid|floatformat:3 }}</td>
-        <td class="num2 leftbig">{{ entry.err_1px_Fl_notsky|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_1px_Fl_sky|floatformat:3 }}</td>
-        <td class="num2 leftbig">{{ entry.err_1px_Fl_s0_10|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_1px_Fl_s10_40|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_1px_Fl_s40|floatformat:3 }}</td>
-        <td class="num2 leftbig">{{ entry.err_EPE_Fl_total|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_Fl_total|floatformat:3 }}</td>
-        <td class="num2">{{ entry.err_WAUC_Fl_total|floatformat:3 }}</td>
+        {% if display == "accuracy" or display == "both" %}
+            <td class="num2 leftbig">{{ entry.err_1px_Fl_total|na_if_missing }}</td>
+            <td class="num2 leftbig">{{ entry.err_1px_Fl_lowdetail|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_1px_Fl_highdetail|na_if_missing }}</td>
+            <td class="num2 leftbig">{{ entry.err_1px_Fl_matched|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_1px_Fl_unmatched|na_if_missing }}</td>
+            <td class="num2 leftbig">{{ entry.err_1px_Fl_rigid|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_1px_Fl_nonrigid|na_if_missing }}</td>
+            <td class="num2 leftbig">{{ entry.err_1px_Fl_notsky|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_1px_Fl_sky|na_if_missing }}</td>
+            <td class="num2 leftbig">{{ entry.err_1px_Fl_s0_10|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_1px_Fl_s10_40|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_1px_Fl_s40|na_if_missing }}</td>
+            <td class="num2 leftbig">{{ entry.err_EPE_Fl_total|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_Fl_total|na_if_missing }}</td>
+            <td class="num2">{{ entry.err_WAUC_Fl_total|na_if_missing }}</td>
+        {% endif %}
+        {% if display == "robustness" or display == "both" %}
+            <td class="num2 leftbig">{{ entry.robust_EPE_Fl_total|na_if_missing }}</td>
+            <td class="num2">{{ entry.robust_Fl_total|na_if_missing }}</td>
+            <td class="num2">{{ entry.robust_1px_Fl_total|na_if_missing }}</td>
+        {% endif %}
     </tr>
     <tr>
         <td class="citation"></td>
-        <td colspan="16" class="citation">
+        <td colspan="{% if display == 'both' %}19{% elif display == 'robustness' %}4{% else %}16{% endif %}" class="citation">
             {% if entry.visibility == "ANON" %}
                 Anonymous.
             {% else %}
@@ -112,10 +196,12 @@
                 {% endif %}
             {% endif %}
         </td>
+    </tr>
     {% endfor %}
 </table>
 </div>
 {% else %}
 <p>No data available.</p>
 {% endif %}
+{% endwith %}
 {% endblock %}

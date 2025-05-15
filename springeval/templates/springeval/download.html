@@ -1,0 +1,80 @@
+{% extends "springeval/base.html" %}
+
+{% block content %}
+  <h3>Download Datasets</h3>
+  <p>
+    Our benchmark has two dataset components:
+  </p>
+  <ul>
+    <li>
+      <strong>Standard evaluation (required):</strong>  
+      Download the Standard Spring dataset below to measure accuracy on the clean test split.
+    </li>
+    <li>
+      <strong>Robustness evaluation (optional):</strong>  
+      Download the Spring robustness dataset if you also want to evaluate performance under corruptions.
+    </li>
+  </ul>
+
+  <ol>
+    <li>
+      <strong>Standard Spring dataset</strong><br>
+      Provides clean test-split ground truth for stereo, optical flow, and scene flow on 10 driving sequences.<br>
+      <div style="margin: 0.75rem 0; text-align: center;">
+        <a
+          href="https://doi.org/10.18419/DARUS-3376"
+          target="_blank" rel="noopener noreferrer"
+          style="
+            display: inline-block;
+            background-color: #28a745;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.2s, box-shadow 0.2s;
+          "
+          onmouseover="this.style.backgroundColor='#218838'; this.style.boxShadow='0 6px 8px rgba(0,0,0,0.15)';"
+          onmouseout="this.style.backgroundColor='#28a745'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';"
+        >
+          Download Standard Spring dataset<br>(DOI: 10.18419/DARUS-3376)
+        </a>
+      </div>
+    </li>
+    <li>
+      <strong>Spring robustness dataset</strong><br>
+      Contains the same sequences under 21 realistic corruptions (fog, noise, blur, etc.) for robustness evaluation.<br>
+      <div style="margin: 0.75rem 0; text-align: center;">
+        <a
+          href="https://doi.org/10.18419/DARUS-5047"
+          target="_blank" rel="noopener noreferrer"
+          style="
+            display: inline-block;
+            background-color: #17a2b8;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.2s, box-shadow 0.2s;
+          "
+          onmouseover="this.style.backgroundColor='#117a8b'; this.style.boxShadow='0 6px 8px rgba(0,0,0,0.15)';"
+          onmouseout="this.style.backgroundColor='#17a2b8'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';"
+        >
+          Download Spring robustness dataset<br>(DOI: 10.18419/DARUS-5047)
+        </a>
+      </div>
+    </li>
+  </ol>
+
+  <p>
+    After downloading, extract each archive into your chosen <code>rootdir</code>.  
+    Your folder tree will include entries like  
+    <code>0003/flow_FW_left/…</code> for the standard split and  
+    <code>&lt;corruption&gt;/0003/flow_FW_left/…</code> for robustness.  
+    See the <a href="{% url 'springeval:faq' %}">FAQ</a> for full instructions
+    on folder structure and submission.
+  </p>
+{% endblock %}
