@@ -1,2 +1,5 @@
 *.sqlite3
 __pycache__
+run_check_file_delete.sh
+run_evaluation.sh
+springwebsite/load_spring_env.sh

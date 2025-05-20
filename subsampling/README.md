@@ -13,7 +13,7 @@ This repository contains
 The code was tested with gcc 11.3.0, cmake 3.22.1 on Ubuntu 22.
 
 ### Usage
-The build result are three executables; disp1_subsampling, disp2_subsampling and flow_subsampling, which are used to generate the corresponding submission files, e.g. via `./disp1_subsampling <path to disp1 results>`.
+The build result are six executables; disp1_subsampling, disp2_subsampling, flow_subsampling, disp1_robust_subsampling, disp2_robust_subsampling and flow_robust_subsampling, which are used to generate the corresponding submission files, e.g. via `./disp1_subsampling <path to disp1 results>`.
 
 Please note that the true subsampling random numbers are withheld and have to be added in the *.cpp files in order to create correct submission executables.
 
