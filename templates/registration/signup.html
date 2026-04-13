@@ -3,11 +3,19 @@
 
 {% block content %}
   <h2>Sign up</h2>
-  <p>In order to submit your own results to the benchmark, you need to sign up.
-    Please register below and confirm your mail address by clicking on the link we send you.
-    Afterwards, your account will be verified by our team.
-    Do not register multiple times!
+  <h3>Registration Steps</h3>
+  <p>In order to submit your own results to the benchmark, you need to sign up. 
+    Please register below and confirm your mail address by clicking on the link we send you. 
+    Afterwards, your account will be verified by our team. 
+    Please note that a registration is not necessary for downloading the benchmark files. 
+    They are accessible by clicking on the [Download] button on the main page.
   </p>
+  <h3>Important Note</h3>
+  <p>Please note that multiple registrations per person are not allowed and are actively monitored by our team. 
+    Violations will result in a ban and the deletion of your account. 
+    To ensure that we can identify you as an individual, the submitted email address, the personal website, or the information provided in your access justification must allow us to uniquely associate the Spring account with you.
+  </p>
+  <h3>Registration Form</h3>
   <form method="post">
     <table>
     {% csrf_token %}

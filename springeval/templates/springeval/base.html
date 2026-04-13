@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% block title %}
     <title>The Spring Dataset &amp; Benchmark</title>
@@ -16,80 +17,122 @@
     <meta name="theme-color" content="#212121" media="(prefers-color-scheme: dark)">
 
 </head>
+
 <body>
 
 
-<header>
-    <div style="max-width:800px;margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:0">
-    <a href="{% url 'springeval:index' %}">
-    <picture>
-        <source srcset="{% static 'springeval/spring_logo2_dark.svg' %}" media="(prefers-color-scheme: dark)">
-        <img width="100%" height="156px" max-width="600px" src="{% static 'springeval/spring_logo2_light.svg' %}" alt="Spring Dataset and Benchmark Logo">
-    </picture>
-    </a>
-    <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>Spring: L. Mehl, J. Schmalfuss, A. Jahedi, Y. Nalivayko, A. Bruhn &mdash; University of Stuttgart </i></p>
-    <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>RobustSpring: J. Schmalfuss, V. Oei, L. Mehl, M. Bartsch, S. Agnihotri, M. Keuper, A. Bruhn</i></p>
-    </div>
-    <nav>
-        {% if request.path == "/download" %}
+    <header>
+        <div style="max-width:800px;margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:0">
+            <a href="{% url 'springeval:index' %}">
+                <picture>
+                    <source srcset="{% static 'springeval/spring_logo2_dark.svg' %}"
+                        media="(prefers-color-scheme: dark)">
+                    <img width="100%" height="156px" max-width="600px"
+                        src="{% static 'springeval/spring_logo2_light.svg' %}" alt="Spring Dataset and Benchmark Logo">
+                </picture>
+            </a>
+            <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>Spring: L. Mehl, J. Schmalfuss, A. Jahedi, Y.
+                    Nalivayko, A. Bruhn &mdash; University of Stuttgart </i></p>
+            <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>RobustSpring: V. Oei, J. Schmalfuss, L. Mehl, M.
+                    Bartsch, S. Agnihotri, M. Keuper, A. Bulling, A. Bruhn &mdash; University of Stuttgart, University
+                    of Mannheim, MPI for Informatics</i></p>
+        </div>
+        <nav>
+            {% if request.path == "/download" %}
             <a href="{% url 'springeval:download' %}" class="current">Download</a>
-        {% else %}
+            {% else %}
             <a href="{% url 'springeval:download' %}">Download</a>
-        {% endif %}
-        {% if request.path == "/stereo" %}
+            {% endif %}
+            {% if request.path == "/stereo" %}
             <a href="{% url 'springeval:stereo' %}" class="current">Stereo</a>
-        {% else %}
+            {% else %}
             <a href="{% url 'springeval:stereo' %}">Stereo</a>
-        {% endif %}
-        {% if request.path == "/opticalflow" %}
+            {% endif %}
+            {% if request.path == "/opticalflow" %}
             <a href="{% url 'springeval:opticalflow' %}" class="current">Optical Flow</a>
-        {% else %}
+            {% else %}
             <a href="{% url 'springeval:opticalflow' %}">Optical Flow</a>
-        {% endif %}
-        {% if request.path == "/sceneflow" %}
+            {% endif %}
+            {% if request.path == "/sceneflow" %}
             <a href="{% url 'springeval:sceneflow' %}" class="current">Scene Flow</a>
-        {% else %}
+            {% else %}
             <a href="{% url 'springeval:sceneflow' %}">Scene Flow</a>
-        {% endif %}
-        {% if request.path == "/user" %}
+            {% endif %}
+            {% if request.path == "/user" %}
             <a href="{% url 'springeval:user' %}" class="current">Submit</a>
-        {% else %}
+            {% else %}
             <a href="{% url 'springeval:user' %}">Submit</a>
-        {% endif %}
-        {% if request.path == "/faq" %}
+            {% endif %}
+            {% if request.path == "/faq" %}
             <a href="{% url 'springeval:faq' %}" class="current">FAQ</a>
-        {% else %}
+            {% else %}
             <a href="{% url 'springeval:faq' %}">FAQ</a>
-        {% endif %}
-    </nav>
-    <div style="float:right; text-align: center;">
-        {% if user.is_authenticated %}
+            {% endif %}
+        </nav>
+        <div style="float:right; text-align: center;">
+            {% if user.is_authenticated %}
             <a href="{% url 'springeval:user' %}">{{ user.get_username }}</a> | <a href="{% url 'logout'%}">Logout</a>
-        {% else %}
-            Not logged in | <a href="{% url 'login'%}">Login</a> | <a href="{% url 'springeval:signup'%}">Create Account</a>
-        {% endif %}
-    </div>
-</header>
+            {% else %}
+            Not logged in | <a href="{% url 'login'%}">Login</a> | <a href="{% url 'springeval:signup'%}">Create
+                Account</a>
+            {% endif %}
+        </div>
+    </header>
 
-  {% block content %}
-  {% endblock %}
+    {% block content %}
+    {% endblock %}
 
-<footer>
-<p>Lukas Mehl, Jenny Schmalfuss, Azin Jahedi, Yaroslava Nalivayko, Andrés Bruhn:</br>"<a href="https://arxiv.org/abs/2303.01943" target="_blank" rel="noopener noreferrer">Spring: A High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo</a>".</br>In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2023.</p>
-<p>Jenny Schmalfuss, Victor Oei, Lukas Mehl, Madlen Bartsch, Shashank Agnihotri, Margret Keuper, Andrés Bruhn:</br>"<a href="https://arxiv.org/abs/2505.09368" target="_blank" rel="noopener noreferrer">RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow, Scene Flow and Stereo</a>".</br>arXiv preprint arXiv:2505.09368, 2025</p>
-<table class="logotable">
-<tr>
-<td style="width:25%;text-align:center" class="noborder"><img width="100%" src="{% static 'springeval/autumn.png' %}" alt="Dog from the spring movie called autumn"></td>
-<td style="width:33%;text-align:center" class="noborder"><a href="https://www.vis.uni-stuttgart.de/" target="_blank" rel="noopener noreferrer"><picture>
-<source srcset="{% static 'springeval/vislogo_white.png' %}" media="(prefers-color-scheme: dark)">
-<img width="95%" src="{% static 'springeval/vislogo.png' %}" alt="Logo of University of Stuttgart / VIS Institute">
-</picture></a></td>
-<td style="width:21%;text-align:center" class="noborder"><a href="https://www.sfbtrr161.de/" target="_blank" rel="noopener noreferrer"><img width="95%" src="{% static 'springeval/logo_sfbtrr161.png' %}" alt="Logo of SFB TRR 161"></a></td>
-<td style="width:17%;text-align:center" class="noborder"><a href="https://imprs.is.mpg.de/" target="_blank" rel="noopener noreferrer"><img width="95%" src="{% static 'springeval/imprs_is_logo.png' %}" alt="Logo of IMPRS-IS"></a></td>
-</tr>
-</table>
-<p>The <a href="https://cloud.blender.org/spring" target="_blank" rel="noopener noreferrer">Spring movie assets</a> by Blender Foundation are licensed under <a href="https://creativecommons.org/licenses/by/4.0/deed" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. The authors thank Andy Goralczyk, Francesco Siddi and the whole Blender Studio team. Lukas Mehl acknowledges funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) &ndash; Project-ID 251654672 &ndash; <a href="https://www.sfbtrr161.de" target="_blank" rel="noopener noreferrer">TRR 161: Quantitative Methods for Visual Computing</a> (B04). Jenny Schmalfuss and Azin Jahedi acknowledge support from the International Max Planck Research School for Intelligent Systems (IMPRS-IS).</p>
-<p><a href="https://www.vis.uni-stuttgart.de/en/team/Bruhn-00001/" target="_blank" rel="noopener noreferrer">Contact</a> | <a href="https://www.uni-stuttgart.de/en/legal-notice/" target="_blank" rel="noopener noreferrer">Imprint</a> | <a href="https://www.uni-stuttgart.de/en/privacy-notice/" target="_blank" rel="noopener noreferrer">Privacy</a></p>
-</footer>
+    <footer>
+        <p>Lukas Mehl, Jenny Schmalfuss, Azin Jahedi, Yaroslava Nalivayko, Andrés Bruhn:</br>"<a
+                href="https://arxiv.org/abs/2303.01943" target="_blank" rel="noopener noreferrer">Spring: A
+                High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo</a>".</br>In
+            IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2023.</p>
+        <p>Jenny Schmalfuss, Victor Oei, Lukas Mehl, Madlen Bartsch, Shashank Agnihotri, Margret Keuper, Andrés
+            Bruhn:</br>"<a href="https://arxiv.org/abs/2505.09368" target="_blank"
+                rel="noopener noreferrer">RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow,
+                Scene Flow and Stereo</a>".</br>arXiv preprint arXiv:2505.09368, 2025</p>
+        <table class="logotable">
+            <tr>
+                <td style="width:25%;text-align:center" class="noborder"><img width="100%"
+                        src="{% static 'springeval/autumn.png' %}" alt="Dog from the spring movie called autumn"></td>
+                <td style="width:33%;text-align:center" class="noborder"><a href="https://www.vis.uni-stuttgart.de/"
+                        target="_blank" rel="noopener noreferrer">
+                        <picture>
+                            <source srcset="{% static 'springeval/vislogo_white.png' %}"
+                                media="(prefers-color-scheme: dark)">
+                            <img width="95%" src="{% static 'springeval/vislogo.png' %}"
+                                alt="Logo of University of Stuttgart / VIS Institute">
+                        </picture>
+                    </a></td>
+                <td style="width:21%;text-align:center" class="noborder"><a href="https://www.sfbtrr161.de/"
+                        target="_blank" rel="noopener noreferrer"><img width="95%"
+                            src="{% static 'springeval/logo_sfbtrr161.png' %}" alt="Logo of SFB TRR 161"></a></td>
+                <td style="width:17%;text-align:center" class="noborder"><a href="https://imprs.is.mpg.de/"
+                        target="_blank" rel="noopener noreferrer"><img width="95%"
+                            src="{% static 'springeval/imprs_is_logo.png' %}" alt="Logo of IMPRS-IS"></a></td>
+            </tr>
+        </table>
+        <p>
+            The <a href="https://cloud.blender.org/spring" target="_blank" rel="noopener noreferrer">Spring movie
+                assets</a> by Blender Foundation are licensed under <a
+                href="https://creativecommons.org/licenses/by/4.0/deed" target="_blank" rel="noopener noreferrer">CC BY
+                4.0</a>. The authors thank Andy Goralczyk, Francesco Siddi and the whole Blender Studio team. Lukas Mehl
+            acknowledges funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) &ndash;
+            Project-ID 251654672 &ndash; <a href="https://www.sfbtrr161.de" target="_blank"
+                rel="noopener noreferrer">TRR 161: Quantitative Methods for Visual Computing</a> (B04).
+            Moreover, Jenny Schmalfuss and Andres Bruhn acknowledge support by the Deutsche Forschungsgemeinschaft (DFG,
+            German Research Foundation) &ndash; Project-ID 533085500.
+            Furthermore, Margret Keuper acknowledges support by the DFG Research Unit 5336 &ndash; Learning to Sense
+            (L2S).
+            Finally, Jenny Schmalfuss, Azin Jahedi, and Victor Oei acknowledge support from the International Max Planck
+            Research School for Intelligent Systems (IMPRS-IS).
+        </p>
+        <p><a href="https://www.vis.uni-stuttgart.de/en/team/Bruhn-00001/" target="_blank"
+                rel="noopener noreferrer">Contact</a> | <a href="https://www.uni-stuttgart.de/en/legal-notice/"
+                target="_blank" rel="noopener noreferrer">Imprint</a> | <a
+                href="https://www.uni-stuttgart.de/en/privacy-notice/" target="_blank"
+                rel="noopener noreferrer">Privacy</a></p>
+    </footer>
 </body>
+
 </html>
