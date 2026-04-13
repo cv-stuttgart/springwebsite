@@ -123,17 +123,17 @@
         {% if display == "robustness" or display == "both" %}
         <th class="leftbig clickable">
             <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=robust_EPE_Fl_total">
-                robust {% if sortby == "robust_EPE_Fl_total" %}&#9650;{% endif %}<br>EPE
+                robust {% if sortby == "robust_EPE_Fl_total" %}&#9650;{% endif %}<br>&Delta;EPE
             </a>
         </th>
         <th class="clickable">
             <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=robust_Fl_total">
-                robust {% if sortby == "robust_Fl_total" %}&#9650;{% endif %}<br>Fl
+                robust {% if sortby == "robust_Fl_total" %}&#9650;{% endif %}<br>&Delta;Fl
             </a>
         </th>
         <th class="clickable">
             <a href="{% url 'springeval:opticalflow' %}?display={{ display }}&s=robust_1px_Fl_total">
-                robust {% if sortby == "robust_1px_Fl_total" %}&#9650;{% endif %}<br>1px
+                robust {% if sortby == "robust_1px_Fl_total" %}&#9650;{% endif %}<br>&Delta;1px
             </a>
         </th>
         {% endif %}

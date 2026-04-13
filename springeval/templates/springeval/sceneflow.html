@@ -95,31 +95,31 @@
         {# Robustness Columns #}
         {% if display == "robustness" or display == "both" %}
         <th class="leftbig clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp1_1px_total">robust {% if sortby == "robust_disp1_1px_total" %}&#9650;{% endif %}<br>1px<sup> D1</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp1_1px_total">robust {% if sortby == "robust_disp1_1px_total" %}&#9650;{% endif %}<br>&Delta;1px<sup> D1</sup></a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp1_Abs_total">robust {% if sortby == "robust_disp1_Abs_total" %}&#9650;{% endif %}<br>Abs<sup> D1</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp1_Abs_total">robust {% if sortby == "robust_disp1_Abs_total" %}&#9650;{% endif %}<br>&Delta;Abs<sup> D1</sup></a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp1_D1_total">robust {% if sortby == "robust_disp1_D1_total" %}&#9650;{% endif %}<br>D1</a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp1_D1_total">robust {% if sortby == "robust_disp1_D1_total" %}&#9650;{% endif %}<br>&Delta;D1</a>
         </th>
         <th class="leftbig clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp2_1px_total">robust {% if sortby == "robust_disp2_1px_total" %}&#9650;{% endif %}<br>1px<sup> D2</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp2_1px_total">robust {% if sortby == "robust_disp2_1px_total" %}&#9650;{% endif %}<br>&Delta;1px<sup> D2</sup></a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp2_Abs_total">robust {% if sortby == "robust_disp2_Abs_total" %}&#9650;{% endif %}<br>Abs<sup> D2</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp2_Abs_total">robust {% if sortby == "robust_disp2_Abs_total" %}&#9650;{% endif %}<br>&Delta;Abs<sup> D2</sup></a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp2_D2_total">robust {% if sortby == "robust_disp2_D2_total" %}&#9650;{% endif %}<br>D2</a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_disp2_D2_total">robust {% if sortby == "robust_disp2_D2_total" %}&#9650;{% endif %}<br>&Delta;D2</a>
         </th>
         <th class="leftbig clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_flow_EPE_total">robust {% if sortby == "robust_flow_EPE_total" %}&#9650;{% endif %}<br>EPE<sup> Fl</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_flow_EPE_total">robust {% if sortby == "robust_flow_EPE_total" %}&#9650;{% endif %}<br>&Delta;EPE<sup> Fl</sup></a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_flow_Fl_total">robust {% if sortby == "robust_flow_Fl_total" %}&#9650;{% endif %}<br>Fl<sup> Fl</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_flow_Fl_total">robust {% if sortby == "robust_flow_Fl_total" %}&#9650;{% endif %}<br>&Delta;Fl<sup> Fl</sup></a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_flow_1px_total">robust {% if sortby == "robust_flow_1px_total" %}&#9650;{% endif %}<br>1px<sup> Fl</sup></a>
+            <a href="{% url 'springeval:sceneflow' %}?display={{ display }}&s=robust_flow_1px_total">robust {% if sortby == "robust_flow_1px_total" %}&#9650;{% endif %}<br>&Delta;1px<sup> Fl</sup></a>
         </th>
         {% endif %}
     </tr>

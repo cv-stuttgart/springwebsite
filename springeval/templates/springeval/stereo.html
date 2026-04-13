@@ -82,13 +82,13 @@
         {# Robustness Columns #}
         {% if display == "robustness" or display == "both" %}
         <th class="leftbig clickable">
-            <a href="{% url 'springeval:stereo' %}?display={{ display }}&s=robust_1px_D1_total">robust {% if sortby == "robust_1px_D1_total" %}&#9650;{% endif %}<br>1px</a>
+            <a href="{% url 'springeval:stereo' %}?display={{ display }}&s=robust_1px_D1_total">robust {% if sortby == "robust_1px_D1_total" %}&#9650;{% endif %}<br>&Delta;1px</a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:stereo' %}?display={{ display }}&s=robust_Abs_D1_total">robust {% if sortby == "robust_Abs_D1_total" %}&#9650;{% endif %}<br>Abs</a>
+            <a href="{% url 'springeval:stereo' %}?display={{ display }}&s=robust_Abs_D1_total">robust {% if sortby == "robust_Abs_D1_total" %}&#9650;{% endif %}<br>&Delta;Abs</a>
         </th>
         <th class="clickable">
-            <a href="{% url 'springeval:stereo' %}?display={{ display }}&s=robust_D1_total">robust {% if sortby == "robust_D1_total" %}&#9650;{% endif %}<br>D1</a>
+            <a href="{% url 'springeval:stereo' %}?display={{ display }}&s=robust_D1_total">robust {% if sortby == "robust_D1_total" %}&#9650;{% endif %}<br>&Delta;D1</a>
         </th>
         {% endif %}
     </tr>
