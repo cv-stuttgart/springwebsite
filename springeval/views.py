@@ -1,4 +1,7 @@
+import glob
+import logging
 import os
+
 from django.http import HttpResponseRedirect
 from .models import ResultEntry
 from django.shortcuts import get_object_or_404, render
@@ -19,6 +22,7 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from django.db.models import Case, When, Value, IntegerField, F
 
+logger = logging.getLogger(__name__)
 
 UPLOAD_DIRECTORY = os.environ["SPRING_UPLOADDIR"]
 
@@ -144,6 +148,36 @@ def can_user_upload(user):
     return user.can_upload()
 
 
+def _upload_file_path(entry, suffix):
+    return os.path.join(
+        UPLOAD_DIRECTORY,
+        f"upload__{entry.id}__{entry.imghash.hex}__{suffix}.hdf5",
+    )
+
+
+def _write_upload(request_files, field_name, entry, suffix):
+    """Write an uploaded file to disk. Returns the path written."""
+    f = request_files[field_name]
+    path = _upload_file_path(entry, suffix)
+    with open(path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    return path
+
+
+def _cleanup_upload_files(entry):
+    """Remove any partial upload files left on disk for *entry*."""
+    pattern = os.path.join(
+        UPLOAD_DIRECTORY,
+        f"upload__{entry.id}__{entry.imghash.hex}__*.hdf5",
+    )
+    for path in glob.glob(pattern):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+
+
 def handle_results(form, request):
     name = form.cleaned_data["name"]
     method_type = form.cleaned_data["method_type"]
@@ -158,54 +192,39 @@ def handle_results(form, request):
         evaluate_robustness=evaluate_robustness,
     )
 
-    # Process standard submission files
-    if method_type in ["ST", "SF"]:
-        f = request.FILES["disp1file"]
-        with open(os.path.join(UPLOAD_DIRECTORY, f"upload__{entry.id}__{entry.imghash.hex}__disp1.hdf5"), 'wb+') as destination:
-            for chunk in f.chunks():
-                destination.write(chunk)
-
-    if method_type in ["FL", "SF"]:
-        f = request.FILES["flowfile"]
-        with open(os.path.join(UPLOAD_DIRECTORY, f"upload__{entry.id}__{entry.imghash.hex}__flow.hdf5"), 'wb+') as destination:
-            for chunk in f.chunks():
-                destination.write(chunk)
-
-    if method_type == "SF":
-        f = request.FILES["disp2file"]
-        with open(os.path.join(UPLOAD_DIRECTORY, f"upload__{entry.id}__{entry.imghash.hex}__disp2.hdf5"), 'wb+') as destination:
-            for chunk in f.chunks():
-                destination.write(chunk)
-
-    # Process robustness files if the user selected robustness evaluation
-    if evaluate_robustness:
-        # Robustness file for disparity 1 (required for ST and SF)
+    try:
+        # Process standard submission files
         if method_type in ["ST", "SF"]:
-            f = request.FILES["robustness_disp1file"]
-            if f:
-                with open(os.path.join(UPLOAD_DIRECTORY, f"upload__{entry.id}__{entry.imghash.hex}__robust_disp1.hdf5"), 'wb+') as destination:
-                    for chunk in f.chunks():
-                        destination.write(chunk)
+            _write_upload(request.FILES, "disp1file", entry, "disp1")
 
-        # Robustness file for optical flow (required for FL and SF)
         if method_type in ["FL", "SF"]:
-            f = request.FILES["robustness_flowfile"]
-            if f:
-                with open(os.path.join(UPLOAD_DIRECTORY, f"upload__{entry.id}__{entry.imghash.hex}__robust_flow.hdf5"), 'wb+') as destination:
-                    for chunk in f.chunks():
-                        destination.write(chunk)
+            _write_upload(request.FILES, "flowfile", entry, "flow")
 
-        # Robustness file for disparity 2 (only required for SF)
         if method_type == "SF":
-            f = request.FILES["robustness_disp2file"]
-            if f:
-                with open(os.path.join(UPLOAD_DIRECTORY, f"upload__{entry.id}__{entry.imghash.hex}__robust_disp2.hdf5"), 'wb+') as destination:
-                    for chunk in f.chunks():
-                        destination.write(chunk)
+            _write_upload(request.FILES, "disp2file", entry, "disp2")
 
-    # Mark the entry for later processing
-    entry.process_status = "WAIT_PROC"
-    entry.save()
+        # Process robustness files if the user selected robustness evaluation
+        if evaluate_robustness:
+            if method_type in ["ST", "SF"] and request.FILES.get("robustness_disp1file"):
+                _write_upload(request.FILES, "robustness_disp1file", entry, "robust_disp1")
+
+            if method_type in ["FL", "SF"] and request.FILES.get("robustness_flowfile"):
+                _write_upload(request.FILES, "robustness_flowfile", entry, "robust_flow")
+
+            if method_type == "SF" and request.FILES.get("robustness_disp2file"):
+                _write_upload(request.FILES, "robustness_disp2file", entry, "robust_disp2")
+
+        # Mark the entry for later processing
+        entry.process_status = "WAIT_PROC"
+        entry.save()
+
+    except OSError as exc:
+        logger.error("Upload failed for entry %s: %s", entry.id, exc)
+        _cleanup_upload_files(entry)
+        entry.delete()
+        raise
+
+    return entry
 
 
 @login_required
@@ -214,7 +233,15 @@ def submit(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_results(form, request)
+            try:
+                handle_results(form, request)
+            except OSError:
+                form.add_error(
+                    None,
+                    "Upload failed \u2014 the server may be low on disk space. "
+                    "Please try again later or contact the administrators.",
+                )
+                return render(request, "springeval/submit.html", {'form': form})
             return HttpResponseRedirect(reverse_lazy('springeval:user'))
     else:
         form = UploadFileForm()
@@ -242,42 +269,28 @@ class EditView(UserPassesTestMixin, generic.UpdateView):
 
         # Only proceed if user checked the toggle
         if form.cleaned_data["evaluate_robustness"]:
-            # disp1 robustness (for ST & SF)
-            if mt in ["ST", "SF"] and files.get("robustness_disp1file"):
-                f = files["robustness_disp1file"]
-                path = os.path.join(
-                    UPLOAD_DIRECTORY,
-                    f"upload__{entry.id}__{entry.imghash.hex}__robust_disp1.hdf5"
-                )
-                with open(path, 'wb+') as dest:
-                    for chunk in f.chunks():
-                        dest.write(chunk)
+            try:
+                if mt in ["ST", "SF"] and files.get("robustness_disp1file"):
+                    _write_upload(files, "robustness_disp1file", entry, "robust_disp1")
 
-            # flow robustness (for FL & SF)
-            if mt in ["FL", "SF"] and files.get("robustness_flowfile"):
-                f = files["robustness_flowfile"]
-                path = os.path.join(
-                    UPLOAD_DIRECTORY,
-                    f"upload__{entry.id}__{entry.imghash.hex}__robust_flow.hdf5"
-                )
-                with open(path, 'wb+') as dest:
-                    for chunk in f.chunks():
-                        dest.write(chunk)
+                if mt in ["FL", "SF"] and files.get("robustness_flowfile"):
+                    _write_upload(files, "robustness_flowfile", entry, "robust_flow")
 
-            # disp2 robustness (only for SF)
-            if mt == "SF" and files.get("robustness_disp2file"):
-                f = files["robustness_disp2file"]
-                path = os.path.join(
-                    UPLOAD_DIRECTORY,
-                    f"upload__{entry.id}__{entry.imghash.hex}__robust_disp2.hdf5"
-                )
-                with open(path, 'wb+') as dest:
-                    for chunk in f.chunks():
-                        dest.write(chunk)
+                if mt == "SF" and files.get("robustness_disp2file"):
+                    _write_upload(files, "robustness_disp2file", entry, "robust_disp2")
 
-            # After adding robustness files, re-queue for processing
-            entry.process_status = "WAIT_PROC"
-            entry.save()
+                # After adding robustness files, re-queue for processing
+                entry.process_status = "WAIT_PROC"
+                entry.save()
+
+            except OSError as exc:
+                logger.error("Robustness upload failed for entry %s: %s", entry.id, exc)
+                form.add_error(
+                    None,
+                    "Upload failed \u2014 the server may be low on disk space. "
+                    "Please try again later or contact the administrators.",
+                )
+                return self.form_invalid(form)
 
         return response
 
