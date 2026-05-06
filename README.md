@@ -54,9 +54,9 @@ If you make use of this code, please cite the following works:
 }
 
 @InProceedings{oei2026robustspring,
-    author        = {Victor Oei and Jenny Schmalfuss and Lukas Mehl and Madlen Bartsch and Shashank Agnihotri and Margret Keuper and Andreas Bulling and Andr\'es Bruhn},
-    title         = {RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow, Scene Flow and Stereo},
-    booktitle     = {Proc. International Conference on Learning Representations (ICLR)},
-    year          = {2026}
+    author    = {Victor Oei and Jenny Schmalfuss and Lukas Mehl and Madlen Bartsch and Shashank Agnihotri and Margret Keuper and Andreas Bulling and Andr\'es Bruhn},
+    title     = {RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow, Scene Flow and Stereo},
+    booktitle = {Proc. International Conference on Learning Representations (ICLR)},
+    year      = {2026}
 }
 ```
