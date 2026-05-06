@@ -49,7 +49,7 @@ If you make use of this code, please cite the following works:
     author    = {Lukas Mehl and Jenny Schmalfuss and Azin Jahedi and Yaroslava Nalivayko and Andr\'es Bruhn},
     title     = {Spring: A High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo},
     booktitle = {Proc. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    pages={4981--4991},
+    pages     = {4981--4991},
     year      = {2023}
 }
 
