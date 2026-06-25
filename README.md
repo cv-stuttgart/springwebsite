@@ -45,18 +45,18 @@ Then, the evaluation of submitted files is triggered via `python manage.py updat
 If you make use of this code, please cite the following works:
 
 ```bibtex
-@InProceedings{Mehl2023_Spring,
+@InProceedings{mehl2023spring,
     author    = {Lukas Mehl and Jenny Schmalfuss and Azin Jahedi and Yaroslava Nalivayko and Andr\'es Bruhn},
     title     = {Spring: A High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo},
     booktitle = {Proc. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    pages     = {4981--4991},
     year      = {2023}
 }
 
-@misc{Schmalfuss2025_RobustSpring,
-    author        = {Jenny Schmalfuss and Victor Oei and Lukas Mehl and Madlen Bartsch and Shashank Agnihotri and Margret Keuper and Andr\'es Bruhn},
-    title         = {RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow, Scene Flow and Stereo},
-    eprint        = {2505.09368},
-    archivePrefix = {arXiv},
-    year          = {2025},
+@InProceedings{oei2026robustspring,
+    author    = {Victor Oei and Jenny Schmalfuss and Lukas Mehl and Madlen Bartsch and Shashank Agnihotri and Margret Keuper and Andreas Bulling and Andr\'es Bruhn},
+    title     = {RobustSpring: Benchmarking Robustness to Image Corruptions for Optical Flow, Scene Flow and Stereo},
+    booktitle = {Proc. International Conference on Learning Representations (ICLR)},
+    year      = {2026}
 }
 ```
