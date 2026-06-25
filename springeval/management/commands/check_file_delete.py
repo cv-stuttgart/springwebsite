@@ -54,12 +54,12 @@ class Command(BaseCommand):
                 continue
             age = timezone.now()-entry.pub_date
             if entry.process_status == "SUCCESS":
-                threshold1 = timezone.timedelta(days=180)
+                threshold1 = timezone.timedelta(days=90)
                 if age > threshold1:
                     to_delete.append(fullpath)
                     continue
             else:
-                threshold2 = timezone.timedelta(days=180)
+                threshold2 = timezone.timedelta(days=60)
                 if age > threshold2:
                     to_delete.append(fullpath)
                     continue
