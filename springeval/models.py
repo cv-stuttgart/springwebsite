@@ -82,6 +82,9 @@ class SpringUser(AbstractBaseUser):
 
     def getreasons(self):
         reasons = []
+        # Admins are exempt from verification and submission rate limits.
+        if self.is_admin:
+            return reasons
         if not self.is_verified:
             reasons.append("Your account is not verified yet by our team. Please check again later.")
         if self.submissioncount(timezone.timedelta(hours=1)) > 0:
