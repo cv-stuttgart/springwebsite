@@ -478,6 +478,8 @@ def evaluate_submission_sceneflow(d1_file, d2_file, fl_file, img_outputdir):
 
 
 def compute_flow_errors(baseline, submission):
+    baseline = np.nan_to_num(baseline)
+    submission = np.nan_to_num(submission)
     submission = submission.astype(np.float64)
     baseline = baseline.astype(np.float64)
     
@@ -498,6 +500,8 @@ def compute_flow_errors(baseline, submission):
 
 
 def compute_disp_errors(baseline, submission):
+    baseline = np.nan_to_num(baseline)
+    submission = np.nan_to_num(submission)
     submission = submission.astype(np.float64)
     baseline = baseline.astype(np.float64)
     
@@ -628,7 +632,7 @@ def evaluate_robust_submission_sceneflow(d1_file, d2_file, fl_file):
             "disp2": {
                 "onepx_total": onepx_total_d2,
                 "abs_total": abs_total_d2,
-                "d1_total": d2_total
+                "d2_total": d2_total
             },
             "flow": {
                 "epe_total": epe_total,
