@@ -1,4 +1,5 @@
 {% extends "springeval/base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -682,6 +683,99 @@ Anonymous.
 </table>
 {% endif %}
 
+{% if chart_data %}
+<h4>Robustness per Corruption</h4>
+{{ chart_data|json_script:"robust-chart-data" }}
+<div style="margin:0.5rem 0;">
+  {% if chart_data.multi_component %}
+  <label style="white-space:nowrap;margin-right:1.5rem;">Method:
+    <select id="robust-chart-component" style="width:10rem;margin-bottom:0;vertical-align:middle;"></select>
+  </label>
+  {% endif %}
+  <label style="white-space:nowrap;">Error metric:
+    <select id="robust-chart-error" style="width:10rem;margin-bottom:0;vertical-align:middle;"></select>
+  </label>
+</div>
+<div id="robust-chart" style="width:100%;max-width:1000px;height:600px;margin:1rem auto;"></div>
+<script src="{% static 'springeval/plotly.min.js' %}"></script>
+<script>
+(function () {
+  const chartData = JSON.parse(document.getElementById("robust-chart-data").textContent);
+  const compSel = document.getElementById("robust-chart-component");
+  const errSel = document.getElementById("robust-chart-error");
+  const byId = {};
+  chartData.components.forEach(function (c) { byId[c.id] = c; });
+
+  function currentComponent() {
+    return compSel ? byId[compSel.value] : chartData.components[0];
+  }
+
+  function fillErrors(comp, selectMetric) {
+    errSel.innerHTML = "";
+    comp.errors.forEach(function (e) {
+      const o = document.createElement("option");
+      o.value = e.metric;
+      o.textContent = e.error;
+      errSel.appendChild(o);
+    });
+    errSel.value = selectMetric || comp.errors[0].metric;
+    if (!errSel.value) {
+      errSel.value = comp.errors[0].metric;
+    }
+  }
+
+  function render() {
+    const metric = errSel.value;
+    const errLabel = errSel.options[errSel.selectedIndex].textContent;
+    const series = chartData.series_by_metric[metric] || [];
+    const traces = series.map(function (s) {
+      return {
+        type: "bar",
+        name: s.name,
+        x: chartData.methods,
+        y: s.values,
+        marker: { color: s.color, line: { color: "black", width: 0.4 } },
+        hovertemplate: "<b>%{x}</b><br>" + s.name + ": %{y:.2f}<extra></extra>"
+      };
+    });
+    const layout = {
+      barmode: "stack",
+      font: { family: "Times New Roman", size: 14 },
+      margin: { l: 65, r: 180, t: 30, b: 110 },
+      xaxis: { tickangle: -35 },
+      yaxis: {
+        title: "Relative " + errLabel,
+        showgrid: true,
+        gridcolor: "rgba(0,0,0,0.15)",
+        zeroline: false
+      },
+      legend: { x: 1.02, y: 1 },
+      plot_bgcolor: "white",
+      paper_bgcolor: "white"
+    };
+    Plotly.react("robust-chart", traces, layout, { responsive: true, displaylogo: false });
+  }
+
+  if (compSel) {
+    chartData.components.forEach(function (c) {
+      const o = document.createElement("option");
+      o.value = c.id;
+      o.textContent = c.label;
+      compSel.appendChild(o);
+    });
+    compSel.value = chartData.default_component;
+    compSel.addEventListener("change", function () {
+      fillErrors(currentComponent());
+      render();
+    });
+  }
+  fillErrors(currentComponent(), chartData.default_metric);
+  errSel.addEventListener("change", render);
+  render();
+})();
+</script>
+{% endif %}
+
 <h4>Robustness Evaluation (Per-Corruption)</h4>
 {% if resultentry.method_type == "ST" %}
 <table>
@@ -754,9 +848,6 @@ Anonymous.
 </table>
 {% endif %}
 {% endif %}
-
-{% load static %}
-
 
 <table style="table-layout: fixed;">
 {% for i in range %}

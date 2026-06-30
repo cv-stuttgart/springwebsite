@@ -3,7 +3,7 @@ import logging
 import os
 
 from django.http import HttpResponseRedirect
-from .models import ResultEntry
+from .models import ResultEntry, RobustCorruptionResult
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -26,6 +26,78 @@ logger = logging.getLogger(__name__)
 
 UPLOAD_DIRECTORY = os.environ["SPRING_UPLOADDIR"]
 
+CORRUPTION_GROUPS = [
+    ("Color", "#440154", ["brightness", "contrast", "saturate"]),
+    ("Blur", "#3b528b", ["defocus_blur", "gaussian_blur", "glass_blur", "motion_blur", "zoom_blur"]),
+    ("Noise", "#21918c", ["gaussian_noise", "impulse_noise", "speckle_noise", "shot_noise"]),
+    ("Quality", "#5ec962", ["pixelate", "jpeg_compression", "elastic_transform"]),
+    ("Weather", "#fde725", ["fog", "frost", "rain", "snow", "spatter"]),
+]
+
+ROBUST_METRICS = {
+    "ST": [
+        ("disp", "Disparity", [("1px", "robust_1px_D1"), ("Abs", "robust_Abs_D1"), ("D1", "robust_D1")]),
+    ],
+    "FL": [
+        ("flow", "Optical Flow", [("EPE", "robust_EPE_Fl"), ("Fl", "robust_Fl"), ("1px", "robust_1px_Fl")]),
+    ],
+    "SF": [
+        ("flow", "Optical Flow", [("EPE", "robust_flow_EPE"), ("Fl", "robust_flow_Fl"), ("1px", "robust_flow_1px")]),
+        ("disp1", "Disparity 1", [("1px", "robust_disp1_1px"), ("Abs", "robust_disp1_Abs"), ("D1", "robust_disp1_D1")]),
+        ("disp2", "Disparity 2", [("1px", "robust_disp2_1px"), ("Abs", "robust_disp2_Abs"), ("D2", "robust_disp2_D2")]),
+    ],
+}
+
+
+def build_robust_chart_data(entry):
+    components_spec = ROBUST_METRICS.get(entry.method_type)
+    if not components_spec:
+        return None
+    label_map = dict(RobustCorruptionResult.CORRUPTION_CHOICES)
+    rcs = {rc.corruption_name: rc for rc in entry.robust_corruption_results.all()}
+    if not rcs:
+        return None
+    group_labels = [g[0] for g in CORRUPTION_GROUPS]
+
+    def series_for_field(field):
+        out = []
+        for col, (_label, color, members) in enumerate(CORRUPTION_GROUPS):
+            for name in members:
+                rc = rcs.get(name)
+                if rc is None:
+                    continue
+                v = getattr(rc, field)
+                if v is None or v < 0:
+                    continue
+                row = [0.0] * len(CORRUPTION_GROUPS)
+                row[col] = v
+                out.append({"name": label_map.get(name, name), "values": row, "color": color})
+        return out
+
+    series_by_metric = {}
+    components = []
+    for comp_id, comp_label, errors in components_spec:
+        err_opts = []
+        for err_label, field in errors:
+            metric_id = f"{comp_id}__{err_label}"
+            series_by_metric[metric_id] = series_for_field(field)
+            err_opts.append({"error": err_label, "metric": metric_id})
+        components.append({"id": comp_id, "label": comp_label, "errors": err_opts})
+
+    if not any(series_by_metric.values()):
+        return None
+
+    first = components[0]
+    return {
+        "methods": group_labels,
+        "series_by_metric": series_by_metric,
+        "components": components,
+        "multi_component": len(components) > 1,
+        "default_component": first["id"],
+        "default_metric": first["errors"][0]["metric"],
+    }
+
+
 class DetailView(UserPassesTestMixin, generic.DetailView):
     model = ResultEntry
     template_name = 'springeval/detail.html'
@@ -43,6 +115,7 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         context['range'] = [f"{i:02d}" for i in range(10)]
+        context['chart_data'] = build_robust_chart_data(self.object)
         return context
 
 
