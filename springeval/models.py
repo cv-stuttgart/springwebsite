@@ -93,6 +93,40 @@ class SpringUser(AbstractBaseUser):
             reasons.append("You had 3 submission in the last 30 days. We allow at most 3 submissions per 30 days.")
         return reasons
 
+    def robustnessadditioncount(self, timespan):
+        return ResultEntry.objects.filter(
+            creator=self.pk,
+            robustness_pub_date__isnull=False,
+            robustness_pub_date__gte=timezone.now() - timespan,
+            process_status__in=["SUCCESS", "WAIT_UPL", "WAIT_PROC"],
+        ).count()
+
+    def get_robustness_reasons(self, entry):
+        reasons = []
+        if self.is_admin:
+            return reasons
+        if not self.is_verified:
+            reasons.append("Your account is not verified yet by our team. Please check again later.")
+        if entry.evaluate_robustness:
+            reasons.append("This submission already has a robustness evaluation.")
+        prior_additions = ResultEntry.objects.filter(
+            creator=self.pk, robustness_pub_date__isnull=False
+        ).exists()
+        if prior_additions and self.robustnessadditioncount(timezone.timedelta(hours=1)) > 0:
+            reasons.append(
+                "You added robustness to a submission in the last hour. "
+                "We allow at most one robustness addition per hour."
+            )
+        if prior_additions and self.robustnessadditioncount(timezone.timedelta(days=30)) >= 3:
+            reasons.append(
+                "You added robustness to 3 submissions in the last 30 days. "
+                "We allow at most 3 robustness additions per 30 days."
+            )
+        return reasons
+
+    def can_add_robustness(self, entry):
+        return len(self.get_robustness_reasons(entry)) == 0
+
     def maildomain(self):
         return self.email.split("@")[-1]
 
@@ -131,6 +165,7 @@ class ResultEntry(models.Model):
     code_url = models.URLField(verbose_name="Link to code", blank=True, null=True)
     
     evaluate_robustness = models.BooleanField(default=False)
+    robustness_pub_date = models.DateTimeField(null=True, blank=True)
 
     # Standard evaluation fields
     err_SF_total = models.FloatField("error SF total", default=-1)

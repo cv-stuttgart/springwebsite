@@ -129,10 +129,35 @@ class EditResultEntryForm(forms.ModelForm):
             "robustness_flowfile",
         ]
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        if self.instance.evaluate_robustness:
+            self.fields["evaluate_robustness"].disabled = True
+            for field_name in (
+                "robustness_disp1file",
+                "robustness_disp2file",
+                "robustness_flowfile",
+            ):
+                self.fields[field_name].disabled = True
+
     def clean(self):
         cleaned = super().clean()
         eval_rob = cleaned.get("evaluate_robustness")
         mt = self.instance.method_type  # ST, FL, or SF
+
+        if self.instance.evaluate_robustness:
+            for field_name in (
+                "robustness_disp1file",
+                "robustness_disp2file",
+                "robustness_flowfile",
+            ):
+                if self.files.get(field_name):
+                    self.add_error(
+                        field_name,
+                        "This submission already has a robustness evaluation.",
+                    )
+            return cleaned
 
         # determine which robustness files are required
         if mt == "ST":
@@ -163,4 +188,9 @@ class EditResultEntryForm(forms.ModelForm):
                     # attach this error to the toggle box
                     self.add_error("evaluate_robustness",
                         f"You uploaded a {label} file but did not enable robustness evaluation.")
+
+        if eval_rob and self.user:
+            for reason in self.user.get_robustness_reasons(self.instance):
+                self.add_error(None, reason)
+
         return cleaned

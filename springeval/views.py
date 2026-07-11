@@ -330,17 +330,38 @@ class EditView(UserPassesTestMixin, generic.UpdateView):
         obj = self.get_object()
         return self.request.user.is_authenticated and (self.request.user == obj.creator)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        entry = self.object
+        if not entry.evaluate_robustness:
+            context["robustness_reasons"] = self.request.user.get_robustness_reasons(entry)
+            context["can_add_robustness"] = self.request.user.can_add_robustness(entry)
+        return context
+
     def get_success_url(self):
         return reverse_lazy('springeval:detail', kwargs={'pk': self.object.id})
 
     def form_valid(self, form):
-        # First, let Django save the model fields (name, visibility, etc.)
+        entry = self.get_object()
+        is_new_robustness = (
+            not entry.evaluate_robustness
+            and form.cleaned_data.get("evaluate_robustness")
+        )
+        if is_new_robustness and not self.request.user.can_add_robustness(entry):
+            for reason in self.request.user.get_robustness_reasons(entry):
+                form.add_error(None, reason)
+            return self.form_invalid(form)
+
         response = super().form_valid(form)
         entry = self.object
         mt = entry.method_type
         files = self.request.FILES
 
-        # Only proceed if user checked the toggle
         if form.cleaned_data["evaluate_robustness"]:
             try:
                 if mt in ["ST", "SF"] and files.get("robustness_disp1file"):
@@ -352,8 +373,9 @@ class EditView(UserPassesTestMixin, generic.UpdateView):
                 if mt == "SF" and files.get("robustness_disp2file"):
                     _write_upload(files, "robustness_disp2file", entry, "robust_disp2")
 
-                # After adding robustness files, re-queue for processing
                 entry.process_status = "WAIT_PROC"
+                if is_new_robustness:
+                    entry.robustness_pub_date = timezone.now()
                 entry.save()
 
             except OSError as exc:
