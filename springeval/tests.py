@@ -3,7 +3,57 @@ from datetime import timedelta
 from django.test import TestCase
 from django.utils import timezone
 
+from springeval.management.robustness_eval_utils import apply_robust_sceneflow_totals
 from springeval.models import ResultEntry, SpringUser
+
+
+class RobustSceneflowTotalsTests(TestCase):
+    def setUp(self):
+        self.user = SpringUser.objects.create_user(
+            email="sf@test.edu",
+            university="Test University",
+            password="testpass",
+        )
+
+    def test_apply_robust_sceneflow_totals_maps_nested_dict(self):
+        entry = ResultEntry.objects.create(
+            name="sf-method",
+            pub_date=timezone.now(),
+            creator=self.user,
+            method_type="SF",
+            process_status="SUCCESS",
+            evaluate_robustness=True,
+        )
+        total = {
+            "disp1": {
+                "disp1_1px_total": 10.5,
+                "disp1_Abs_total": 11.5,
+                "disp1_D1_total": 12.5,
+            },
+            "disp2": {
+                "disp2_1px_total": 20.5,
+                "disp2_Abs_total": 21.5,
+                "disp2_D2_total": 22.5,
+            },
+            "flow": {
+                "flow_EPE_total": 30.5,
+                "flow_Fl_total": 31.5,
+                "flow_1px_total": 32.5,
+            },
+        }
+        apply_robust_sceneflow_totals(entry, total)
+        entry.save()
+
+        entry.refresh_from_db()
+        self.assertEqual(entry.robust_disp1_1px_total, 10.5)
+        self.assertEqual(entry.robust_disp1_Abs_total, 11.5)
+        self.assertEqual(entry.robust_disp1_D1_total, 12.5)
+        self.assertEqual(entry.robust_disp2_1px_total, 20.5)
+        self.assertEqual(entry.robust_disp2_Abs_total, 21.5)
+        self.assertEqual(entry.robust_disp2_D2_total, 22.5)
+        self.assertEqual(entry.robust_flow_EPE_total, 30.5)
+        self.assertEqual(entry.robust_flow_Fl_total, 31.5)
+        self.assertEqual(entry.robust_flow_1px_total, 32.5)
 
 
 class RobustnessLimitTests(TestCase):

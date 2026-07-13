@@ -8,6 +8,10 @@ from springeval.management.commands.evaluation import (
     evaluate_robust_submission_flow,
     evaluate_robust_submission_sceneflow
 )
+from springeval.management.robustness_eval_utils import (
+    robust_sceneflow_file_paths,
+    save_robust_sceneflow_results,
+)
 from springeval.models import ResultEntry, RobustCorruptionResult
 import os
 import traceback
@@ -226,10 +230,7 @@ class Command(BaseCommand):
             entry.save()
 
         for entryid, imghash, full_path in robust_sceneflow:
-            outputimgdir = os.path.join(IMG_DIR, imghash)
-            file_d1 = full_path
-            file_d2 = full_path[:-17] + "robust_disp2.hdf5"
-            file_fl = full_path[:-17] + "robust_flow.hdf5"
+            file_d1, file_d2, file_fl = robust_sceneflow_file_paths(full_path)
             entry = ResultEntry.objects.get(id=entryid)
             try:
                 robust_results = evaluate_robust_submission_sceneflow(file_d1, file_d2, file_fl)
@@ -238,28 +239,7 @@ class Command(BaseCommand):
                 entry.process_status = "FAIL"
                 entry.save()
                 continue
-            
-            total_errors = robust_results.get("total", {})
-            for k, v in total_errors.items():
-                setattr(entry, "robust_" + k, v)
-                
-            by_corr = robust_results.get("by_corruption", {})
-            for corruption, metrics in by_corr.items():
-                defaults = {
-                    "robust_disp1_1px": metrics.get("disp1", {}).get("onepx_total", -1),
-                    "robust_disp1_Abs": metrics.get("disp1", {}).get("abs_total", -1),
-                    "robust_disp1_D1": metrics.get("disp1", {}).get("d1_total", -1),
-                    "robust_disp2_1px": metrics.get("disp2", {}).get("onepx_total", -1),
-                    "robust_disp2_Abs": metrics.get("disp2", {}).get("abs_total", -1),
-                    "robust_disp2_D2": metrics.get("disp2", {}).get("d2_total", -1),
-                    "robust_flow_EPE": metrics.get("flow", {}).get("epe_total", -1),
-                    "robust_flow_Fl": metrics.get("flow", {}).get("fl_total", -1),
-                    "robust_flow_1px": metrics.get("flow", {}).get("onepx_total", -1),
-                }
-                RobustCorruptionResult.objects.update_or_create(
-                    result_entry=entry,
-                    corruption_name=corruption,
-                    defaults=defaults
-                )
+
+            save_robust_sceneflow_results(entry, robust_results)
             entry.process_status = "SUCCESS"
             entry.save()
