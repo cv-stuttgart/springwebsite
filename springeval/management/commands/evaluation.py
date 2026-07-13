@@ -521,6 +521,26 @@ def compute_disp_errors(baseline, submission):
     return onepx_total, abs_total, d1_total
 
 
+def compute_disp2_robust_errors(clean, corrupted):
+    if np.isnan(clean).any() or np.isnan(corrupted).any():
+        raise ValueError("Submission contains nan values!")
+
+    clean = np.clip(clean, -1e6, 1e6)
+    corrupted = np.clip(corrupted, -1e6, 1e6)
+
+    epe = np.abs(clean.astype(np.float32) - corrupted.astype(np.float32))
+    abs_total = np.nanmean(epe)
+
+    onepx = epe > 1
+    onepx_total = 100 * onepx.sum() / (~np.isnan(epe)).sum()
+
+    disp_len = 100
+    d2 = (epe > 3) & (epe > 0.05 * disp_len)
+    d2_total = 100 * d2.sum() / (~np.isnan(epe)).sum()
+
+    return onepx_total, abs_total, d2_total
+
+
 def evaluate_robust_submission_flow(submission_file):
     flow_data = flow_IO.readRobustnessFile(submission_file, "flow")
     
@@ -620,7 +640,9 @@ def evaluate_robust_submission_sceneflow(d1_file, d2_file, fl_file):
             continue
         
         onepx_total_d1, abs_total_d1, d1_total = compute_disp_errors(disp1_data["clean"], disp1_data[corruption])
-        onepx_total_d2, abs_total_d2, d2_total = compute_disp_errors(disp2_data["clean"], disp2_data[corruption])
+        onepx_total_d2, abs_total_d2, d2_total = compute_disp2_robust_errors(
+            disp2_data["clean"], disp2_data[corruption]
+        )
         epe_total, fl_total, onepx_total_flow = compute_flow_errors(flow_data["clean"], flow_data[corruption])
         
         by_corruption[corruption] = {

@@ -1,10 +1,52 @@
 from datetime import timedelta
 
+import numpy as np
 from django.test import TestCase
 from django.utils import timezone
 
+from springeval.management.commands.evaluation import compute_disp2_robust_errors
 from springeval.management.robustness_eval_utils import apply_robust_sceneflow_totals
 from springeval.models import ResultEntry, SpringUser
+
+
+class ComputeDisp2RobustErrorsTests(TestCase):
+    def test_basic_metrics(self):
+        clean = np.array([10.0, 20.0, 30.0, 40.0], dtype=np.float32)
+        corrupted = np.array([11.5, 20.0, 36.0, 40.0], dtype=np.float32)
+
+        onepx, abs_total, d2 = compute_disp2_robust_errors(clean, corrupted)
+
+        self.assertAlmostEqual(onepx, 50.0)
+        self.assertAlmostEqual(abs_total, 1.875)
+        self.assertAlmostEqual(d2, 25.0)
+
+    def test_clipping_limits_extreme_values(self):
+        clean = np.array([0.0, 1e7], dtype=np.float32)
+        corrupted = np.array([0.0, 0.0], dtype=np.float32)
+
+        onepx, abs_total, d2 = compute_disp2_robust_errors(clean, corrupted)
+
+        self.assertAlmostEqual(abs_total, 5e5)
+        self.assertAlmostEqual(onepx, 50.0)
+        self.assertAlmostEqual(d2, 50.0)
+
+    def test_fixed_disp_len_threshold(self):
+        clean = np.array([100.0, 100.0], dtype=np.float32)
+        corrupted = np.array([94.0, 95.0], dtype=np.float32)
+
+        onepx, abs_total, d2 = compute_disp2_robust_errors(clean, corrupted)
+
+        self.assertAlmostEqual(onepx, 100.0)
+        self.assertAlmostEqual(abs_total, 5.5)
+        # D2 requires epe > 3 and epe > 0.05 * 100 (= 5); only the 6px error qualifies.
+        self.assertAlmostEqual(d2, 50.0)
+
+    def test_raises_on_nan(self):
+        clean = np.array([1.0, np.nan], dtype=np.float32)
+        corrupted = np.array([1.0, 2.0], dtype=np.float32)
+
+        with self.assertRaises(ValueError):
+            compute_disp2_robust_errors(clean, corrupted)
 
 
 class RobustSceneflowTotalsTests(TestCase):
